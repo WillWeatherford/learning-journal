@@ -17,7 +17,11 @@ requires = [
     'transaction',
     'zope.sqlalchemy',
     'waitress',
+    'psycopg2',
     ]
+
+test_require = ['pytest', 'pytest-watch', 'tox']
+dev_requires = ['ipython', 'pyramid-ipython']
 
 setup(name='journalapp',
       version='0.0',
@@ -38,6 +42,10 @@ setup(name='journalapp',
       zip_safe=False,
       test_suite='journalapp',
       install_requires=requires,
+      extras_require={
+        'test': test_require,
+        'dev': dev_requires,
+      },
       entry_points="""\
       [paste.app_factory]
       main = journalapp:main
