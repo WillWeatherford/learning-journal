@@ -1,3 +1,4 @@
+"""Setup.py for pyramid."""
 import os
 
 from setuptools import setup, find_packages
@@ -18,21 +19,21 @@ requires = [
     'zope.sqlalchemy',
     'waitress',
     'psycopg2',
-    ]
+]
 
 test_require = ['pytest', 'pytest-watch', 'tox']
-dev_requires = ['ipython', 'pyramid-ipython']
+dev_requires = ['ipython', 'pyramid-ipython', 'webtest']
 
 setup(name='journalapp',
       version='0.0',
       description='journalapp',
       long_description=README + '\n\n' + CHANGES,
       classifiers=[
-        "Programming Language :: Python",
-        "Framework :: Pyramid",
-        "Topic :: Internet :: WWW/HTTP",
-        "Topic :: Internet :: WWW/HTTP :: WSGI :: Application",
-        ],
+          "Programming Language :: Python",
+          "Framework :: Pyramid",
+          "Topic :: Internet :: WWW/HTTP",
+          "Topic :: Internet :: WWW/HTTP :: WSGI :: Application",
+      ],
       author='',
       author_email='',
       url='',
@@ -43,13 +44,13 @@ setup(name='journalapp',
       test_suite='journalapp',
       install_requires=requires,
       extras_require={
-        'test': test_require,
-        'dev': dev_requires,
+          'test': test_require,
+          'dev': dev_requires,
       },
       entry_points="""\
       [paste.app_factory]
       main = journalapp:main
       [console_scripts]
-      initialize_journalapp_db = journalapp.scripts.initializedb:main
+      initialize_db = journalapp.scripts.initializedb:main
       """,
       )
