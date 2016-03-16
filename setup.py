@@ -11,7 +11,7 @@ with open(os.path.join(here, 'CHANGES.txt')) as f:
 
 requires = [
     'pyramid',
-    'pyramid_chameleon',
+    'pyramid_jinja2',
     'pyramid_debugtoolbar',
     'pyramid_tm',
     'SQLAlchemy',
@@ -25,7 +25,7 @@ test_require = ['pytest', 'pytest-watch', 'tox']
 dev_requires = ['ipython', 'pyramid-ipython', 'webtest']
 
 setup(name='journalapp',
-      version='0.0',
+      version='0.2',
       description='journalapp',
       long_description=README + '\n\n' + CHANGES,
       classifiers=[
