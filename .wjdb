@@ -1,1 +1,0 @@
-export  DATABASE_URL=postgresql://mac:miracle830@localhost:5432/learning_journal
