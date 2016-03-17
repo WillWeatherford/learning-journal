@@ -1,3 +1,4 @@
+"""SQLAlchemy views to render learning journal."""
 from pyramid.response import Response
 from pyramid.view import view_config
 
@@ -10,7 +11,8 @@ from .models import (
 
 
 @view_config(route_name='list', renderer='templates/list.jinja2')
-def list(request):
+def list_view(request):
+    """Return rendered list of entries for journal home page."""
     try:
         entries = DBSession.query(Entry).order_by(Entry.created.desc())
     except DBAPIError:
@@ -20,7 +22,8 @@ def list(request):
 
 
 @view_config(route_name='detail', renderer='templates/detail.jinja2')
-def detail(request):
+def detail_view(request):
+    """Return rendered single entry for entry detail page."""
     detail_id = request.matchdict['detail_id']
     entry = DBSession.query(Entry).filter(Entry.id == detail_id).one()
     return {'entry': entry}
