@@ -6,7 +6,12 @@
 
     {% for entry in entries %}
 
-        <h4><a href="/detail/{{entry.id}}">{{entry.title}}</a></h4>
+        <h4>
+            <a href="{{request.route_url('detail', detail_id=entry.id)}}">
+            {{entry.title}}
+            </a>
+        </h4>
+        
         <p>{{entry.created.strftime('%Y-%m-%d at %H:%M UTC')}}</p>
 
     {% endfor %}

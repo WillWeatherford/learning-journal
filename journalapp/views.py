@@ -15,21 +15,26 @@ def list_view(request):
     """Return rendered list of entries for journal home page."""
     try:
         entries = DBSession.query(Entry).order_by(Entry.created.desc())
+        return {'entries': entries}
     except DBAPIError:
-        return Response(conn_err_msg, content_type='text/plain', status_int=500)
-    # import pdb; pdb.set_trace()
-    return {'entries': entries}
+        return Response(CONN_ERR_MSG,
+                        content_type='text/plain',
+                        status_int=500)
 
 
 @view_config(route_name='detail', renderer='templates/detail.jinja2')
 def detail_view(request):
     """Return rendered single entry for entry detail page."""
-    detail_id = request.matchdict['detail_id']
-    entry = DBSession.query(Entry).filter(Entry.id == detail_id).one()
-    return {'entry': entry}
+    try:
+        detail_id = request.matchdict['detail_id']
+        entry = DBSession.query(Entry).get(detail_id)
+        return {'entry': entry}
+    except DBAPIError:
+        return Response(CONN_ERR_MSG,
+                        content_type='text/plain',
+                        status_int=500)
 
-
-conn_err_msg = """\
+CONN_ERR_MSG = """\
 Pyramid is having a problem using your SQL database.  The problem
 might be caused by one of the following things:
 
@@ -44,4 +49,3 @@ might be caused by one of the following things:
 After you fix the problem, please restart the Pyramid application to
 try it again.
 """
-
