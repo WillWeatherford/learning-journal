@@ -12,7 +12,7 @@ from .models import (
 @view_config(route_name='list', renderer='templates/list.jinja2')
 def list(request):
     try:
-        entries = DBSession.query(Entry).all()
+        entries = DBSession.query(Entry).order_by(Entry.created.desc())
     except DBAPIError:
         return Response(conn_err_msg, content_type='text/plain', status_int=500)
     # import pdb; pdb.set_trace()
