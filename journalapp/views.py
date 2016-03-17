@@ -9,6 +9,8 @@ from .models import (
     Entry,
 )
 
+from forms import EntryForm
+
 
 @view_config(route_name='list', renderer='templates/list.jinja2')
 def list_view(request):
@@ -38,10 +40,11 @@ def detail_view(request):
 @view_config(route_name='add', renderer='templates/add.jinja2')
 def add_entry(request):
     """Display a empty form, when submitted, return to the detail page."""
-    pass
+    form = EntryForm(**request.POST)
+    return {'form': form}
 
 
-@view_config(route_name='edit', rendered='templates/edit.jinja2')
+@view_config(route_name='edit', renderer='templates/edit.jinja2')
 def edit_entry(request):
     """Display editing page to edit entries, return to detail page."""
     pass

@@ -24,5 +24,7 @@ def main(global_config, **settings):
     config.add_static_view('static', 'static', cache_max_age=3600)
     config.add_route('list', '/')
     config.add_route('detail', '/detail/{detail_id}')
+    config.add_route('add', '/add{}')
+    config.add_route('edit', '/edit/{detail_id}')
     config.scan()
     return config.make_wsgi_app()
