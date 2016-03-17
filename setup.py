@@ -9,6 +9,7 @@ with open(os.path.join(here, 'README.txt')) as f:
 with open(os.path.join(here, 'CHANGES.txt')) as f:
     CHANGES = f.read()
 
+
 requires = [
     'pyramid',
     'pyramid_jinja2',
@@ -19,6 +20,7 @@ requires = [
     'zope.sqlalchemy',
     'waitress',
     'psycopg2',
+    'wtforms'
 ]
 
 test_require = ['pytest', 'pytest-watch', 'tox', 'webtest']

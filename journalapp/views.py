@@ -34,6 +34,20 @@ def detail_view(request):
                         content_type='text/plain',
                         status_int=500)
 
+
+@view_config(route_name='add', renderer='templates/add.jinja2')
+def add_entry(request):
+    """Display a empty form, when submitted, return to the detail page."""
+    pass
+
+
+@view_config(route_name='edit', rendered='templates/edit.jinja2')
+def edit_entry(request):
+    """Display editing page to edit entries, return to detail page."""
+    pass
+
+
+
 CONN_ERR_MSG = """\
 Pyramid is having a problem using your SQL database.  The problem
 might be caused by one of the following things:
