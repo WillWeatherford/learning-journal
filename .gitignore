@@ -66,5 +66,9 @@ include/
 pip-selfcheck.json
 share/
 
+
 .wjdb
+
+
+.nope
 
