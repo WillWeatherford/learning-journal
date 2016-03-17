@@ -21,8 +21,8 @@ requires = [
     'psycopg2',
 ]
 
-test_require = ['pytest', 'pytest-watch', 'tox']
-dev_requires = ['ipython', 'pyramid-ipython', 'webtest']
+test_require = ['pytest', 'pytest-watch', 'tox', 'webtest']
+dev_requires = ['ipython', 'pyramid-ipython']
 
 setup(name='journalapp',
       version='0.2',
