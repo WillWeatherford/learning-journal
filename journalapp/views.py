@@ -9,8 +9,6 @@ from .models import (
 )
 
 
-
-
 @view_config(route_name='list', renderer='templates/list.jinja2')
 def list(request):
     # try:
@@ -19,6 +17,12 @@ def list(request):
     #     return Response(conn_err_msg, content_type='text/plain', status_int=500)
     # import pdb; pdb.set_trace()
     return {'name': 'WenJing'}
+
+
+@view_config(route_name='detail', renderer='templates/detail.jinja2')
+def detail(request):
+    detail_id = request.matchdict['detail_id']
+    return request.matchdict
 
 
 # conn_err_msg = """\
