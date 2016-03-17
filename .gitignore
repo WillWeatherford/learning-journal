@@ -65,4 +65,4 @@ bin/
 include/
 pip-selfcheck.json
 share/
-
+.nope
