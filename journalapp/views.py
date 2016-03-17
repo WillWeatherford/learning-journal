@@ -1,3 +1,4 @@
+"""SQLAlchemy views to render learning journal."""
 from pyramid.response import Response
 from pyramid.view import view_config
 
@@ -5,39 +6,42 @@ from sqlalchemy.exc import DBAPIError
 
 from .models import (
     DBSession,
-    MyModel,
+    Entry,
 )
 
 
 @view_config(route_name='list', renderer='templates/list.jinja2')
-def list(request):
-    # try:
-    #     one = DBSession.query(MyModel).filter(MyModel.name == 'one').first()
-    # except DBAPIError:
-    #     return Response(conn_err_msg, content_type='text/plain', status_int=500)
+def list_view(request):
+    """Return rendered list of entries for journal home page."""
+    try:
+        entries = DBSession.query(Entry).order_by(Entry.created.desc())
+    except DBAPIError:
+        return Response(conn_err_msg, content_type='text/plain', status_int=500)
     # import pdb; pdb.set_trace()
-    return {'name': 'WenJing'}
+    return {'entries': entries}
 
 
 @view_config(route_name='detail', renderer='templates/detail.jinja2')
-def detail(request):
+def detail_view(request):
+    """Return rendered single entry for entry detail page."""
     detail_id = request.matchdict['detail_id']
-    return request.matchdict
+    entry = DBSession.query(Entry).filter(Entry.id == detail_id).one()
+    return {'entry': entry}
 
 
-# conn_err_msg = """\
-# Pyramid is having a problem using your SQL database.  The problem
-# might be caused by one of the following things:
+conn_err_msg = """\
+Pyramid is having a problem using your SQL database.  The problem
+might be caused by one of the following things:
 
-# 1.  You may need to run the "initialize_journalapp_db" script
-#     to initialize your database tables.  Check your virtual
-#     environment's "bin" directory for this script and try to run it.
+1.  You may need to run the "initialize_journalapp_db" script
+    to initialize your database tables.  Check your virtual
+    environment's "bin" directory for this script and try to run it.
 
-# 2.  Your database server may not be running.  Check that the
-#     database server referred to by the "sqlalchemy.url" setting in
-#     your "development.ini" file is running.
+2.  Your database server may not be running.  Check that the
+    database server referred to by the "sqlalchemy.url" setting in
+    your "development.ini" file is running.
 
-# After you fix the problem, please restart the Pyramid application to
-# try it again.
-# """
+After you fix the problem, please restart the Pyramid application to
+try it again.
+"""
 
