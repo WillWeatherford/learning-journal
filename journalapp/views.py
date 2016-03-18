@@ -1,6 +1,8 @@
 """SQLAlchemy views to render learning journal."""
+import transaction
 from pyramid.response import Response
 from pyramid.view import view_config
+from pyramid.httpexceptions import HTTPFound
 
 from sqlalchemy.exc import DBAPIError
 
@@ -41,7 +43,21 @@ def detail_view(request):
 def add_entry(request):
     """Display a empty form, when submitted, return to the detail page."""
     form = EntryForm(**request.POST)
+    # import pdb; pdb.set_trace()
+    if request.method == "POST" and form.validate():
+        new_entry = Entry(title=form.title.data, text=form.text.data)
+
+        DBSession.add(new_entry)
+        DBSession.flush()
+        transaction.commit()
+
+
+        raise HTTPFound(location='/')
+
+
+
     return {'form': form}
+
 
 
 @view_config(route_name='edit', renderer='templates/edit.jinja2')
