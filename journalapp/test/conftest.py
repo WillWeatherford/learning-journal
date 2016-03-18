@@ -48,6 +48,6 @@ def dbtransaction(request, sqlengine):
     return connection
 
 
-# @pytest.fixture()
-# def app(DBSession):
-#     pass
+@pytest.fixture()
+def app(DBSession):
+    pass
