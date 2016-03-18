@@ -1,4 +1,5 @@
 """SQLAlchemy views to render learning journal."""
+from jinja2 import Markup
 import transaction
 from pyramid.response import Response
 from pyramid.view import view_config
@@ -12,6 +13,7 @@ from .models import (
 )
 
 from forms import EntryForm
+import markdown
 
 
 @view_config(route_name='list', renderer='templates/list.jinja2')
@@ -39,32 +41,49 @@ def detail_view(request):
                         status_int=500)
 
 
-@view_config(route_name='add', renderer='templates/add.jinja2')
+@view_config(route_name='add', renderer='templates/add-edit.jinja2')
 def add_entry(request):
     """Display a empty form, when submitted, return to the detail page."""
-    form = EntryForm(**request.POST)
+    form = EntryForm(request.POST)
     # import pdb; pdb.set_trace()
     if request.method == "POST" and form.validate():
         new_entry = Entry(title=form.title.data, text=form.text.data)
-
         DBSession.add(new_entry)
         DBSession.flush()
+        entry_id = new_entry.id
         transaction.commit()
-
-
-        raise HTTPFound(location='/')
-
-
-
+        raise HTTPFound(location='/detail/{}'.format(entry_id))
     return {'form': form}
 
 
-
-@view_config(route_name='edit', renderer='templates/edit.jinja2')
+@view_config(route_name='edit', renderer='templates/add-edit.jinja2')
 def edit_entry(request):
     """Display editing page to edit entries, return to detail page."""
-    pass
+    try:
+        detail_id = request.matchdict['detail_id']
+        entry = DBSession.query(Entry).get(detail_id)
+        form = EntryForm(request.POST, entry)
+        if request.method == "POST" and form.validate():
+            form.populate_obj(entry)
+            DBSession.add(entry)
+            DBSession.flush()
+            entry_id = entry.id
+            transaction.commit()
+            raise HTTPFound(location='/detail/{}'.format(entry_id))
+        return {'form': form}
+    except DBAPIError:
+        return Response(CONN_ERR_MSG,
+                        content_type='text/plain',
+                        status_int=500)
 
+def render_markdown(content, linenums=False, pygments_style='default'):
+    ext = "codehilite(linenums={linenums}, pygments_style={pygments_style})"
+    output = Markup(
+        markdown.markdown(
+            content,
+            extensions=[ext.format(**locals()), 'fenced_code'])
+    )
+    return output
 
 
 CONN_ERR_MSG = """\
