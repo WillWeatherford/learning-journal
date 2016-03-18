@@ -1,24 +1,96 @@
+"""SQLAlchemy views to render learning journal."""
+from jinja2 import Markup
+import transaction
 from pyramid.response import Response
 from pyramid.view import view_config
+from pyramid.httpexceptions import HTTPFound
 
 from sqlalchemy.exc import DBAPIError
 
 from .models import (
     DBSession,
-    MyModel,
-    )
+    Entry,
+)
+
+from journalapp.forms import EntryForm
+import markdown
 
 
-@view_config(route_name='home', renderer='templates/mytemplate.pt')
-def my_view(request):
+@view_config(route_name='list', renderer='templates/list.jinja2')
+def list_view(request):
+    """Return rendered list of entries for journal home page."""
     try:
-        one = DBSession.query(MyModel).filter(MyModel.name == 'one').first()
+        entries = DBSession.query(Entry).order_by(Entry.created.desc())
+        return {'entries': entries}
     except DBAPIError:
-        return Response(conn_err_msg, content_type='text/plain', status_int=500)
-    return {'one': one, 'project': 'journalapp'}
+        return Response(CONN_ERR_MSG,
+                        content_type='text/plain',
+                        status_int=500)
 
 
-conn_err_msg = """\
+@view_config(route_name='detail', renderer='templates/detail.jinja2')
+def detail_view(request):
+    """Return rendered single entry for entry detail page."""
+    try:
+        detail_id = request.matchdict['detail_id']
+        entry = DBSession.query(Entry).get(detail_id)
+        return {'entry': entry}
+    except DBAPIError:
+        return Response(CONN_ERR_MSG,
+                        content_type='text/plain',
+                        status_int=500)
+
+
+@view_config(route_name='add', renderer='templates/add-edit.jinja2')
+def add_entry(request):
+    """Display a empty form, when submitted, return to the detail page."""
+    form = EntryForm(request.POST)
+    # import pdb; pdb.set_trace()
+    if request.method == "POST" and form.validate():
+        new_entry = Entry(title=form.title.data, text=form.text.data)
+        DBSession.add(new_entry)
+        DBSession.flush()
+        entry_id = new_entry.id
+        transaction.commit()
+        next_url = request.route_url('detail', detail_id=entry_id)
+        return HTTPFound(location=next_url)
+    return {'form': form}
+
+
+@view_config(route_name='edit', renderer='templates/add-edit.jinja2')
+def edit_entry(request):
+    """Display editing page to edit entries, return to detail page."""
+    try:
+        detail_id = request.matchdict['detail_id']
+        entry = DBSession.query(Entry).get(detail_id)
+        form = EntryForm(request.POST, entry)
+        if request.method == "POST" and form.validate():
+            form.populate_obj(entry)
+            DBSession.add(entry)
+            DBSession.flush()
+            entry_id = entry.id
+            transaction.commit()
+            next_url = request.route_url('detail', detail_id=entry_id)
+            return HTTPFound(location=next_url)
+        return {'form': form}
+    except DBAPIError:
+        return Response(CONN_ERR_MSG,
+                        content_type='text/plain',
+                        status_int=500)
+
+
+def render_markdown(content, linenums=False, pygments_style='default'):
+    """Jinja2 filter to render markdown text. Copied but no understood."""
+    ext = "codehilite(linenums={linenums}, pygments_style={pygments_style})"
+    output = Markup(
+        markdown.markdown(
+            content,
+            extensions=[ext.format(**locals()), 'fenced_code'])
+    )
+    return output
+
+
+CONN_ERR_MSG = """\
 Pyramid is having a problem using your SQL database.  The problem
 might be caused by one of the following things:
 
@@ -33,4 +105,3 @@ might be caused by one of the following things:
 After you fix the problem, please restart the Pyramid application to
 try it again.
 """
-

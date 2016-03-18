@@ -1,4 +1,4 @@
-"""Setup.py for pyramid."""
+"""Setup.py for Learning Journal app."""
 import os
 
 from setuptools import setup, find_packages
@@ -8,6 +8,7 @@ with open(os.path.join(here, 'README.txt')) as f:
     README = f.read()
 with open(os.path.join(here, 'CHANGES.txt')) as f:
     CHANGES = f.read()
+
 
 requires = [
     'pyramid',
@@ -19,10 +20,12 @@ requires = [
     'zope.sqlalchemy',
     'waitress',
     'psycopg2',
+    'wtforms',
+    'markdown',
 ]
 
-test_require = ['pytest', 'pytest-watch', 'tox']
-dev_requires = ['ipython', 'pyramid-ipython', 'webtest']
+test_require = ['pytest', 'pytest-watch', 'tox', 'webtest', 'pytest-cov']
+dev_requires = ['ipython', 'pyramid-ipython']
 
 setup(name='journalapp',
       version='0.2',
