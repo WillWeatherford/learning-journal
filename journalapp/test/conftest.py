@@ -10,7 +10,11 @@ from journalapp.models import DBSession, Base, Entry
 
 
 TEST_DATABASE_URL = 'sqlite:////tmp/test_db.sqlite'
-CONFIG_URI = os.path.join('..', '..', 'development.ini')
+
+PARENT_DIR = os.path.dirname(__file__)
+GPARENT_DIR = os.path.join(PARENT_DIR, '..')
+GGPARENT_DIR = os.path.join(GPARENT_DIR, '..')
+CONFIG_URI = os.path.join(GGPARENT_DIR, 'development.ini')
 
 
 @pytest.fixture(scope='session')
@@ -49,9 +53,10 @@ def app(dbtransaction):
     """Create pretend app fixture of our main app."""
     from journalapp import main
     from webtest import TestApp
-    # from pyramid.paster import get_appsettings
-    # settings = get_appsettings(CONFIG_URI)
-    app = main({})
+    from pyramid.paster import get_appsettings
+    settings = get_appsettings(CONFIG_URI)
+    settings['sqlalchemy.url'] = TEST_DATABASE_URL
+    app = main({}, **settings)
     return TestApp(app)
 
 
