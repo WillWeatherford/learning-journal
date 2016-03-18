@@ -32,7 +32,7 @@ def dbtransaction(request, sqlengine):
     """Create database transaction connection."""
     connection = sqlengine.connect()
     transaction = connection.begin()
-    DBSession.configure(bind=connection)
+    DBSession.configure(bind=connection, expire_on_commit=False)
 
     def teardown():
         transaction.rollback()

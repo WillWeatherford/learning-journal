@@ -63,17 +63,15 @@ def test_add(dbtransaction, app):
     assert results.count() == 1
 
 
-# def test_edit(dbtransaction, app, new_entry):
-#     """Test that edit view can edit an exiting Entry."""
-#     new_title = new_entry.title + 'TEST'
-#     new_text = new_entry.text + 'TEST'
-#     params = {
-#         'title': new_title,
-#         'text': new_text
-#     }
-#     app.post('/edit/{}'.format(new_entry.id), params=params, status='3*')
-#     # results = DBSession.query(Entry).filter(
-#     #     Entry.title == new_title and Entry.text == new_text)
-#     # assert results.count() == 1
-#     assert new_entry.text == new_text
-#     assert new_entry.title == new_title
+def test_edit(dbtransaction, app, new_entry):
+    """Test that edit view can edit an exiting Entry."""
+    new_title = new_entry.title + 'TEST'
+    new_text = new_entry.text + 'TEST'
+    params = {
+        'title': new_title,
+        'text': new_text
+    }
+    app.post('/edit/{}'.format(new_entry.id), params=params, status='3*')
+    results = DBSession.query(Entry).filter(
+        Entry.title == new_title and Entry.text == new_text)
+    assert results.count() == 1
