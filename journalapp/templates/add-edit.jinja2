@@ -1,0 +1,14 @@
+{% extends "base.jinja2" %}
+{% block content %}
+
+<div>
+<form method='POST' action=''>
+<div>{{form.title.label}}: {{form.title()}}</div>
+<div>{{form.text.label}}: {{form.text() | markdown}}</div>
+<div><INPUT TYPE="submit" VALUE="submit"></div>
+</form>
+</div>
+
+
+
+{% endblock %}
