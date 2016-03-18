@@ -12,7 +12,7 @@ from .models import (
     Entry,
 )
 
-from forms import EntryForm
+from journalapp.forms import EntryForm
 import markdown
 
 
@@ -75,6 +75,7 @@ def edit_entry(request):
         return Response(CONN_ERR_MSG,
                         content_type='text/plain',
                         status_int=500)
+
 
 def render_markdown(content, linenums=False, pygments_style='default'):
     ext = "codehilite(linenums={linenums}, pygments_style={pygments_style})"

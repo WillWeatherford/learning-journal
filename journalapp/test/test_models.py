@@ -3,35 +3,21 @@
 from journalapp.models import Entry, DBSession
 
 
-def test_create_entry(dbtransaction):
+def test_create_entry(dbtransaction, new_entry):
     """Test if model initialized with correct vals."""
-    new_entry = Entry(title="testblogpost", text="aaa")
-    assert new_entry.id is None
-    DBSession.add(new_entry)
-    DBSession.flush()
     assert new_entry.id is not None
 
 
-def test_create_text(dbtransaction):
+def test_create_text(dbtransaction, new_entry):
     """Test if model initialized with correct vals."""
-    new_entry = Entry(title="testblogpost", text="aaa")
-    DBSession.add(new_entry)
-    DBSession.flush()
     assert new_entry.text is not None
 
 
-def test_create_title(dbtransaction):
+def test_create_title(dbtransaction, new_entry):
     """Test if model initialized with correct vals."""
-    new_entry = Entry(title="testblogpost", text="aaa")
-    DBSession.add(new_entry)
-    DBSession.flush()
     assert new_entry.title is not None
 
 
-def test_create_created(dbtransaction):
+def test_create_created(dbtransaction, new_entry):
     """Test if model initialized with correct vals."""
-    new_entry = Entry(title="testblogpost", text="aaa")
-    assert new_entry.created is None
-    DBSession.add(new_entry)
-    DBSession.flush()
     assert new_entry.created is not None
