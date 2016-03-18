@@ -24,7 +24,7 @@ requires = [
     'markdown',
 ]
 
-test_require = ['pytest', 'pytest-watch', 'tox', 'webtest']
+test_require = ['pytest', 'pytest-watch', 'tox', 'webtest', 'pytest-cov']
 dev_requires = ['ipython', 'pyramid-ipython']
 
 setup(name='journalapp',

@@ -75,3 +75,16 @@ def test_edit(dbtransaction, app, new_entry):
     results = DBSession.query(Entry).filter(
         Entry.title == new_title and Entry.text == new_text)
     assert results.count() == 1
+
+
+def test_add_get(dbtransaction, app):
+    """TEST that  makes sure user can load add page."""
+    response = app.get('/add')
+    assert response.status_code == 200
+
+
+def test_edit_get(dbtransaction, app, new_entry):
+    """TEST that  makes sure user can load edit page."""
+    new_entry_id = new_entry.id
+    response = app.get('/edit/{}'.format(new_entry_id))
+    assert response.status_code == 200
