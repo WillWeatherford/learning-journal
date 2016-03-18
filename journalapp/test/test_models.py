@@ -1,6 +1,5 @@
 """Testing Model."""
 # _*_.utf8_*_
-from journalapp.models import Entry, DBSession
 
 
 def test_create_entry(dbtransaction, new_entry):

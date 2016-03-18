@@ -52,7 +52,8 @@ def add_entry(request):
         DBSession.flush()
         entry_id = new_entry.id
         transaction.commit()
-        raise HTTPFound(location='/detail/{}'.format(entry_id))
+        next_url = request.route_url('detail', detail_id=entry_id)
+        raise HTTPFound(location=next_url)
     return {'form': form}
 
 
@@ -69,7 +70,8 @@ def edit_entry(request):
             DBSession.flush()
             entry_id = entry.id
             transaction.commit()
-            raise HTTPFound(location='/detail/{}'.format(entry_id))
+            next_url = request.route_url('detail', detail_id=entry_id)
+            raise HTTPFound(location=next_url)
         return {'form': form}
     except DBAPIError:
         return Response(CONN_ERR_MSG,
@@ -78,6 +80,7 @@ def edit_entry(request):
 
 
 def render_markdown(content, linenums=False, pygments_style='default'):
+    """Jinja2 filter to render markdown text. Copied but no understood."""
     ext = "codehilite(linenums={linenums}, pygments_style={pygments_style})"
     output = Markup(
         markdown.markdown(

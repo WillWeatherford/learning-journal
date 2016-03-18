@@ -2,8 +2,6 @@
 
 {% block content %}
 
-    <p>List of Learning Journal Entries goes here</p>
-
      <a href="{{request.route_url('add')}}">NewEntry</a>
 
     {% for entry in entries %}
@@ -12,11 +10,11 @@
             <a href="{{request.route_url('detail', detail_id=entry.id)}}">
             {{entry.title}}
             </a>
-
         </h4>
 
         <p>{{entry.created.strftime('%Y-%m-%d at %H:%M UTC')}}</p>
 
+        </br>
     {% endfor %}
 
 {% endblock %}
