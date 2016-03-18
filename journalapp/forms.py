@@ -16,3 +16,5 @@ class EntryForm(Form):
         'Text',
         [InputRequired(message='Text is required.')
          ])
+
+

@@ -53,7 +53,7 @@ def add_entry(request):
         entry_id = new_entry.id
         transaction.commit()
         next_url = request.route_url('detail', detail_id=entry_id)
-        raise HTTPFound(location=next_url)
+        return HTTPFound(location=next_url)
     return {'form': form}
 
 
@@ -71,7 +71,7 @@ def edit_entry(request):
             entry_id = entry.id
             transaction.commit()
             next_url = request.route_url('detail', detail_id=entry_id)
-            raise HTTPFound(location=next_url)
+            return HTTPFound(location=next_url)
         return {'form': form}
     except DBAPIError:
         return Response(CONN_ERR_MSG,
