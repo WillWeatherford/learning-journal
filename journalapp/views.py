@@ -32,8 +32,8 @@ def list_view(request):
 def detail_view(request):
     """Return rendered single entry for entry detail page."""
     try:
-        detail_id = request.matchdict['detail_id']
-        entry = DBSession.query(Entry).get(detail_id)
+        entry_id = request.matchdict['entry_id']
+        entry = DBSession.query(Entry).get(entry_id)
         return {'entry': entry}
     except DBAPIError:
         return Response(CONN_ERR_MSG,
@@ -51,8 +51,8 @@ def add_entry(request):
         DBSession.add(new_entry)
         DBSession.flush()
         entry_id = new_entry.id
-        transaction.commit()
-        next_url = request.route_url('detail', detail_id=entry_id)
+        # transaction.commit()
+        next_url = request.route_url('detail', entry_id=new_entry.id)
         return HTTPFound(location=next_url)
     return {'form': form}
 
@@ -61,16 +61,16 @@ def add_entry(request):
 def edit_entry(request):
     """Display editing page to edit entries, return to detail page."""
     try:
-        detail_id = request.matchdict['detail_id']
-        entry = DBSession.query(Entry).get(detail_id)
+        entry_id = request.matchdict['entry_id']
+        entry = DBSession.query(Entry).get(entry_id)
         form = EntryForm(request.POST, entry)
         if request.method == "POST" and form.validate():
             form.populate_obj(entry)
             DBSession.add(entry)
             DBSession.flush()
             entry_id = entry.id
-            transaction.commit()
-            next_url = request.route_url('detail', detail_id=entry_id)
+            # transaction.commit()
+            next_url = request.route_url('detail', entry_id=entry.id)
             return HTTPFound(location=next_url)
         return {'form': form}
     except DBAPIError:

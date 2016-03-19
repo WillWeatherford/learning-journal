@@ -23,7 +23,7 @@ def test_list_route(dbtransaction, app, new_entry):
 def test_detail_view(dbtransaction, new_entry):
     """Test that list_view returns a Query of Entries."""
     test_request = DummyRequest()
-    test_request.matchdict = {'detail_id': new_entry.id}
+    test_request.matchdict = {'entry_id': new_entry.id}
 
     response_dict = detail_view(test_request)
     assert response_dict['entry'] == new_entry
@@ -43,12 +43,12 @@ def test_list_detail(dbtransaction, new_entry):
     list_response_dict = list_view(test_request)
     entry = list_response_dict['entries'][0]
 
-    test_request.matchdict = {'detail_id': entry.id}
+    test_request.matchdict = {'entry_id': entry.id}
     entry_response_dict = detail_view(test_request)
     assert entry_response_dict['entry'] == entry == new_entry
 
 
-def test_add(dbtransaction, app):
+def test_add_route_post(dbtransaction, app):
     """Test that add view creates a new Entry in database."""
     results = DBSession.query(Entry).filter(
         Entry.title == 'TEST' and Entry.text == 'TEST')
@@ -63,7 +63,7 @@ def test_add(dbtransaction, app):
     assert results.count() == 1
 
 
-def test_edit(dbtransaction, app, new_entry):
+def test_edit_route_post(dbtransaction, app, new_entry):
     """Test that edit view can edit an exiting Entry."""
     new_title = new_entry.title + 'TEST'
     new_text = new_entry.text + 'TEST'
@@ -77,13 +77,13 @@ def test_edit(dbtransaction, app, new_entry):
     assert results.count() == 1
 
 
-def test_add_get(dbtransaction, app):
+def test_add_route_get(dbtransaction, app):
     """TEST that  makes sure user can load add page."""
     response = app.get('/add')
     assert response.status_code == 200
 
 
-def test_edit_get(dbtransaction, app, new_entry):
+def test_edit_route_get(dbtransaction, app, new_entry):
     """TEST that  makes sure user can load edit page."""
     new_entry_id = new_entry.id
     response = app.get('/edit/{}'.format(new_entry_id))

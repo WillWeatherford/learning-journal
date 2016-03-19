@@ -48,7 +48,7 @@ def dbtransaction(request, sqlengine):
     return connection
 
 
-@pytest.fixture()
+@pytest.fixture(scope='session')
 def app(dbtransaction):
     """Create pretend app fixture of our main app."""
     from journalapp import main
@@ -69,7 +69,7 @@ def new_entry(request):
 
     def teardown():
         DBSession.query(Entry).filter(Entry.id == new_entry.id).delete()
-        DBSession.flush()
+        # DBSession.flush()
 
     request.addfinalizer(teardown)
     return new_entry
