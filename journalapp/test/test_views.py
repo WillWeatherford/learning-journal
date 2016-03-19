@@ -8,6 +8,7 @@ from journalapp.views import (
 )
 from journalapp.models import DBSession, Entry
 from journalapp.forms import EntryForm
+# from webob import multidict
 
 
 # Testing views by calling the view functions directly.
@@ -26,11 +27,19 @@ def test_detail_view(dbtransaction, new_entry, dummy_get_request):
     assert response_dict['entry'] == new_entry
 
 
-def test_add_view(dbtransaction, new_entry, dummy_get_request):
+def test_add_view(dbtransaction, dummy_get_request):
     """Test that the add_view returns a dict containing the proper form."""
     response_dict = add_entry(dummy_get_request)
     form = response_dict.get('form', None)
     assert isinstance(form, EntryForm)
+
+
+# def test_add_view_post(dbtransaction, dummy_post_request):
+#     """Test that the add_view returns a dict containing the proper form."""
+#     dummy_post_request.POST = multidict.MultiDict([('title', 'TESTadd'),
+#                                                    ('text', 'TESTadd')])
+#     response = add_entry(dummy_post_request)
+#     import pdb; pdb.set_trace()
 
 
 def test_detail_error(dbtransaction, dummy_get_request):

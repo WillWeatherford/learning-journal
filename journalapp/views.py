@@ -44,7 +44,6 @@ def detail_view(request):
 def add_entry(request):
     """Display a empty form, when submitted, return to the detail page."""
     try:
-        # import pdb; pdb.set_trace()
         form = EntryForm(request.POST)
         if request.method == "POST" and form.validate():
             new_entry = Entry(title=form.title.data, text=form.text.data)

@@ -64,16 +64,16 @@ def app(dbtransaction):
 @pytest.fixture(scope='function')
 def new_entry(request):
     """Return a fresh new Entry and flush to the database."""
-    new_entry = Entry(title="testblogpost", text="aaa")
-    DBSession.add(new_entry)
+    entry = Entry(title="testblogpost", text="aaa")
+    DBSession.add(entry)
     DBSession.flush()
 
     def teardown():
-        DBSession.query(Entry).filter(Entry.id == new_entry.id).delete()
+        DBSession.query(Entry).filter(Entry.id == entry.id).delete()
         # DBSession.flush()
 
     request.addfinalizer(teardown)
-    return new_entry
+    return entry
 
 
 @pytest.fixture(scope='function')
