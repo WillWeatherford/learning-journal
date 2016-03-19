@@ -3,7 +3,7 @@
 import os
 import pytest
 from sqlalchemy import create_engine
-
+from pyramid.testing import DummyRequest
 from journalapp.models import DBSession, Base, Entry
 
 # use these to initialize the app for testing
@@ -73,3 +73,19 @@ def new_entry(request):
 
     request.addfinalizer(teardown)
     return new_entry
+
+
+@pytest.fixture(scope='function')
+def dummy_get_request():
+    """Make a dummy GET request to test views."""
+    request = DummyRequest()
+    request.method = 'GET'
+    return request
+
+
+@pytest.fixture(scope='function')
+def dummy_post_request():
+    """Make a dummy POST request to test views."""
+    request = DummyRequest()
+    request.method = 'POST'
+    return request
