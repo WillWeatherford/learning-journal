@@ -12,10 +12,14 @@ from journalapp.models import DBSession, Base, Entry
 
 TEST_DATABASE_URL = 'sqlite:////tmp/test_db.sqlite'
 
-PARENT_DIR = os.path.dirname(__file__)
-GPARENT_DIR = os.path.join(PARENT_DIR, '..')
-GGPARENT_DIR = os.path.join(GPARENT_DIR, '..')
-CONFIG_URI = os.path.join(GGPARENT_DIR, 'development.ini')
+
+@pytest.fixture(scope='session')
+def config_uri():
+    """Establish configuration uri for initialization."""
+    parent_dir = os.path.dirname(__file__)
+    gparent_dir = os.path.join(parent_dir, '..')
+    ggparent_dir = os.path.join(gparent_dir, '..')
+    return os.path.join(ggparent_dir, 'development.ini')
 
 
 @pytest.fixture(scope='session')
@@ -50,12 +54,12 @@ def dbtransaction(request, sqlengine):
 
 
 @pytest.fixture(scope='session')
-def app(dbtransaction):
+def app(dbtransaction, config_uri):
     """Create pretend app fixture of our main app."""
     from journalapp import main
     from webtest import TestApp
     from pyramid.paster import get_appsettings
-    settings = get_appsettings(CONFIG_URI)
+    settings = get_appsettings(config_uri)
     settings['sqlalchemy.url'] = TEST_DATABASE_URL
     app = main({}, **settings)
     return TestApp(app)
