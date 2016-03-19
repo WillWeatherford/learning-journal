@@ -2,6 +2,7 @@
 """Configure fixtures for unit and functional tests."""
 import os
 import pytest
+from webob import multidict
 from sqlalchemy import create_engine
 from pyramid.testing import DummyRequest
 from journalapp.models import DBSession, Base, Entry
@@ -80,6 +81,7 @@ def dummy_get_request():
     """Make a dummy GET request to test views."""
     request = DummyRequest()
     request.method = 'GET'
+    request.POST = multidict.NoVars()
     return request
 
 

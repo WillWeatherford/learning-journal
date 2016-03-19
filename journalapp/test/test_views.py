@@ -7,7 +7,10 @@ from journalapp.views import (
     edit_entry,
 )
 from journalapp.models import DBSession, Entry
+from journalapp.forms import EntryForm
 
+
+# Testing views by calling the view functions directly.
 
 def test_list_view(dbtransaction, new_entry, dummy_get_request):
     """Test that list_view returns a Query of Entries."""
@@ -17,10 +20,17 @@ def test_list_view(dbtransaction, new_entry, dummy_get_request):
 
 
 def test_detail_view(dbtransaction, new_entry, dummy_get_request):
-    """Test that list_view returns a Query of Entries."""
+    """Test that detail_view returns the correct Entry page."""
     dummy_get_request.matchdict = {'entry_id': new_entry.id}
     response_dict = detail_view(dummy_get_request)
     assert response_dict['entry'] == new_entry
+
+
+def test_add_view(dbtransaction, new_entry, dummy_get_request):
+    """Test that the add_view returns a dict containing the proper form."""
+    response_dict = add_entry(dummy_get_request)
+    form = response_dict.get('form', None)
+    assert isinstance(form, EntryForm)
 
 
 def test_detail_error(dbtransaction, dummy_get_request):
@@ -37,15 +47,7 @@ def test_edit_error(dbtransaction, dummy_get_request):
     assert response.status_code == 404
 
 
-def test_list_detail(dbtransaction, new_entry, dummy_get_request):
-    """Combine tests of list and detail views."""
-    list_response_dict = list_view(dummy_get_request)
-    entry = list_response_dict['entries'][0]
-
-    dummy_get_request.matchdict = {'entry_id': entry.id}
-    entry_response_dict = detail_view(dummy_get_request)
-    assert entry_response_dict['entry'] == entry == new_entry
-
+# Testing routes through TestApp app fixture.
 
 def test_list_route(dbtransaction, app, new_entry):
     """Test if model initialized with correct vals."""
