@@ -31,6 +31,10 @@ def detail_view(request):
     try:
         entry_id = request.matchdict['entry_id']
         entry = DBSession.query(Entry).get(entry_id)
+        if not entry:
+            return Response('Post {} does not exist.'.format(entry_id),
+                            content_type='text/plain',
+                            status_int=404)
         return {'entry': entry}
     except DBAPIError:
         return Response(DB_ERR_MSG, content_type='text/plain', status_int=500)
@@ -58,6 +62,10 @@ def edit_entry(request):
     try:
         entry_id = request.matchdict['entry_id']
         entry = DBSession.query(Entry).get(entry_id)
+        if not entry:
+            return Response('Post {} does not exist.'.format(entry_id),
+                            content_type='text/plain',
+                            status_int=404)
         form = EntryForm(request.POST, entry)
         if request.method == "POST" and form.validate():
             form.populate_obj(entry)

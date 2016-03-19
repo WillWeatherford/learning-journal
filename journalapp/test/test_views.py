@@ -1,6 +1,11 @@
 """Testing views."""
 # _*_.utf8_*_
-from journalapp.views import list_view, detail_view
+from journalapp.views import (
+    list_view,
+    detail_view,
+    add_entry,
+    edit_entry,
+)
 from journalapp.models import DBSession, Entry
 
 
@@ -14,9 +19,22 @@ def test_list_view(dbtransaction, new_entry, dummy_get_request):
 def test_detail_view(dbtransaction, new_entry, dummy_get_request):
     """Test that list_view returns a Query of Entries."""
     dummy_get_request.matchdict = {'entry_id': new_entry.id}
-
     response_dict = detail_view(dummy_get_request)
     assert response_dict['entry'] == new_entry
+
+
+def test_detail_error(dbtransaction, dummy_get_request):
+    """Test that detail page gives a 404 when entry ID does not exist."""
+    dummy_get_request.matchdict = {'entry_id': 9999}
+    response = detail_view(dummy_get_request)
+    assert response.status_code == 404
+
+
+def test_edit_error(dbtransaction, dummy_get_request):
+    """Test that edit page gives a 404 when entry ID does not exist."""
+    dummy_get_request.matchdict = {'entry_id': 9999}
+    response = edit_entry(dummy_get_request)
+    assert response.status_code == 404
 
 
 def test_list_detail(dbtransaction, new_entry, dummy_get_request):
