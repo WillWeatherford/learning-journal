@@ -22,9 +22,7 @@ def list_view(request):
         entries = DBSession.query(Entry).order_by(Entry.created.desc())
         return {'entries': entries}
     except DBAPIError:
-        return Response(DB_ERR_MSG,
-                        content_type='text/plain',
-                        status_int=500)
+        return Response(DB_ERR_MSG, content_type='text/plain', status_int=500)
 
 
 @view_config(route_name='detail', renderer='templates/detail.jinja2')
@@ -35,9 +33,7 @@ def detail_view(request):
         entry = DBSession.query(Entry).get(entry_id)
         return {'entry': entry}
     except DBAPIError:
-        return Response(DB_ERR_MSG,
-                        content_type='text/plain',
-                        status_int=500)
+        return Response(DB_ERR_MSG, content_type='text/plain', status_int=500)
 
 
 @view_config(route_name='add', renderer='templates/add-edit.jinja2')
