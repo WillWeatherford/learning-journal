@@ -1,6 +1,5 @@
 """SQLAlchemy views to render learning journal."""
 from jinja2 import Markup
-import transaction
 from pyramid.response import Response
 from pyramid.view import view_config
 from pyramid.httpexceptions import HTTPFound
@@ -23,7 +22,7 @@ def list_view(request):
         entries = DBSession.query(Entry).order_by(Entry.created.desc())
         return {'entries': entries}
     except DBAPIError:
-        return Response(CONN_ERR_MSG,
+        return Response(DB_ERR_MSG,
                         content_type='text/plain',
                         status_int=500)
 
@@ -36,7 +35,7 @@ def detail_view(request):
         entry = DBSession.query(Entry).get(entry_id)
         return {'entry': entry}
     except DBAPIError:
-        return Response(CONN_ERR_MSG,
+        return Response(DB_ERR_MSG,
                         content_type='text/plain',
                         status_int=500)
 
@@ -44,17 +43,17 @@ def detail_view(request):
 @view_config(route_name='add', renderer='templates/add-edit.jinja2')
 def add_entry(request):
     """Display a empty form, when submitted, return to the detail page."""
-    form = EntryForm(request.POST)
-    # import pdb; pdb.set_trace()
-    if request.method == "POST" and form.validate():
-        new_entry = Entry(title=form.title.data, text=form.text.data)
-        DBSession.add(new_entry)
-        DBSession.flush()
-        entry_id = new_entry.id
-        # transaction.commit()
-        next_url = request.route_url('detail', entry_id=new_entry.id)
-        return HTTPFound(location=next_url)
-    return {'form': form}
+    try:
+        form = EntryForm(request.POST)
+        if request.method == "POST" and form.validate():
+            new_entry = Entry(title=form.title.data, text=form.text.data)
+            DBSession.add(new_entry)
+            DBSession.flush()
+            next_url = request.route_url('detail', entry_id=new_entry.id)
+            return HTTPFound(location=next_url)
+        return {'form': form}
+    except DBAPIError:
+        return Response(DB_ERR_MSG, content_type='text/plain', status_int=500)
 
 
 @view_config(route_name='edit', renderer='templates/add-edit.jinja2')
@@ -68,15 +67,11 @@ def edit_entry(request):
             form.populate_obj(entry)
             DBSession.add(entry)
             DBSession.flush()
-            entry_id = entry.id
-            # transaction.commit()
             next_url = request.route_url('detail', entry_id=entry.id)
             return HTTPFound(location=next_url)
         return {'form': form}
     except DBAPIError:
-        return Response(CONN_ERR_MSG,
-                        content_type='text/plain',
-                        status_int=500)
+        return Response(DB_ERR_MSG, content_type='text/plain', status_int=500)
 
 
 def render_markdown(content, linenums=False, pygments_style='default'):
@@ -90,7 +85,7 @@ def render_markdown(content, linenums=False, pygments_style='default'):
     return output
 
 
-CONN_ERR_MSG = """\
+DB_ERR_MSG = """\
 Pyramid is having a problem using your SQL database.  The problem
 might be caused by one of the following things:
 
