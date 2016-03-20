@@ -38,6 +38,9 @@ def test_add_view_post(dbtransaction, dummy_post_request):
     """Test that the add_view returns a dict containing the proper form."""
     dummy_post_request.path = '/add'
     response = add_entry(dummy_post_request)
+    assert response.status_code == 302 and response.title == 'Found'
+    loc_parts = response.location.split('/')
+    assert loc_parts[-2] == 'detail' and loc_parts[-1].isdigit()
 
 
 def test_detail_error(dbtransaction, dummy_get_request):
