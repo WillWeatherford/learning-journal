@@ -8,7 +8,6 @@ from journalapp.views import (
 )
 from journalapp.models import DBSession, Entry
 from journalapp.forms import EntryForm
-from webob import multidict
 
 
 # Testing views by calling the view functions directly.
@@ -32,6 +31,17 @@ def test_add_view(dbtransaction, dummy_get_request):
     response_dict = add_entry(dummy_get_request)
     form = response_dict.get('form', None)
     assert isinstance(form, EntryForm)
+
+
+def test_edit_view_post(dbtransaction, new_entry, dummy_post_request):
+    """Test that the add_view returns a dict containing the proper form."""
+    entry_id = new_entry.id
+    dummy_post_request.path = '/edit'
+    dummy_post_request.matchdict = {'entry_id': entry_id}
+    response = edit_entry(dummy_post_request)
+    assert response.status_code == 302 and response.title == 'Found'
+    loc_parts = response.location.split('/')
+    assert loc_parts[-2] == 'detail' and int(loc_parts[-1]) == entry_id
 
 
 def test_add_view_post(dbtransaction, dummy_post_request):
@@ -85,6 +95,20 @@ def test_edit_route_get(dbtransaction, app, new_entry):
     assert response.status_code == 200
 
 
+def test_edit_route_post(dbtransaction, app, new_entry):
+    """Test that edit view can edit an exiting Entry."""
+    new_title = new_entry.title + 'TEST'
+    new_text = new_entry.text + 'TEST'
+    params = {
+        'title': new_title,
+        'text': new_text
+    }
+    app.post('/edit/{}'.format(new_entry.id), params=params, status='3*')
+    results = DBSession.query(Entry).filter(
+        Entry.title == new_title and Entry.text == new_text)
+    assert results.count() == 1
+
+
 def test_add_route_post(dbtransaction, app):
     """Test that add view creates a new Entry in database."""
     results = DBSession.query(Entry).filter(
@@ -97,18 +121,4 @@ def test_add_route_post(dbtransaction, app):
     app.post('/add', params=params, status='3*')
     results = DBSession.query(Entry).filter(
         Entry.title == 'TEST' and Entry.text == 'TEST')
-    assert results.count() == 1
-
-
-def test_edit_route_post(dbtransaction, app, new_entry):
-    """Test that edit view can edit an exiting Entry."""
-    new_title = new_entry.title + 'TEST'
-    new_text = new_entry.text + 'TEST'
-    params = {
-        'title': new_title,
-        'text': new_text
-    }
-    app.post('/edit/{}'.format(new_entry.id), params=params, status='3*')
-    results = DBSession.query(Entry).filter(
-        Entry.title == new_title and Entry.text == new_text)
     assert results.count() == 1
