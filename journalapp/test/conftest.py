@@ -14,6 +14,12 @@ TEST_DATABASE_URL = 'sqlite:////tmp/test_db.sqlite'
 
 
 @pytest.fixture(scope='session')
+def test_database_url():
+    """Establish test database url as a fixture for entire session."""
+    return TEST_DATABASE_URL
+
+
+@pytest.fixture(scope='session')
 def config_uri():
     """Establish configuration uri for initialization."""
     parent_dir = os.path.dirname(__file__)
@@ -23,9 +29,9 @@ def config_uri():
 
 
 @pytest.fixture(scope='session')
-def sqlengine(request):
+def sqlengine(request, test_database_url):
     """Return sql engine."""
-    engine = create_engine(TEST_DATABASE_URL)
+    engine = create_engine(test_database_url)
     DBSession.configure(bind=engine)
     Base.metadata.create_all(engine)
 
@@ -54,13 +60,13 @@ def dbtransaction(request, sqlengine):
 
 
 @pytest.fixture(scope='session')
-def app(dbtransaction, config_uri):
+def app(test_database_url, dbtransaction, config_uri):
     """Create pretend app fixture of our main app."""
     from journalapp import main
     from webtest import TestApp
     from pyramid.paster import get_appsettings
     settings = get_appsettings(config_uri)
-    settings['sqlalchemy.url'] = TEST_DATABASE_URL
+    settings['sqlalchemy.url'] = test_database_url
     app = main({}, **settings)
     return TestApp(app)
 
