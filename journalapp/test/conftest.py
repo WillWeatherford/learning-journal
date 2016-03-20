@@ -4,7 +4,7 @@ import os
 import pytest
 from webob import multidict
 from sqlalchemy import create_engine
-from pyramid.testing import DummyRequest
+from pyramid import testing
 from journalapp.models import DBSession, Base, Entry
 
 # use these to initialize the app for testing
@@ -86,18 +86,30 @@ def new_entry(request):
     return entry
 
 
+@pytest.fixture(scope='session')
+def dummy_request():
+    """Make a base generic dummy request to be used."""
+    request = testing.DummyRequest()
+    config = testing.setUp()
+    config.add_route('list', '/')
+    config.add_route('detail', '/detail/{entry_id}')
+    config.add_route('add', '/add')
+    config.add_route('edit', '/edit/{entry_id}')
+    return request
+
+
 @pytest.fixture(scope='function')
-def dummy_get_request():
+def dummy_get_request(dummy_request):
     """Make a dummy GET request to test views."""
-    request = DummyRequest()
-    request.method = 'GET'
-    request.POST = multidict.NoVars()
-    return request
+    dummy_request.method = 'GET'
+    dummy_request.POST = multidict.NoVars()
+    return dummy_request
 
 
 @pytest.fixture(scope='function')
-def dummy_post_request():
+def dummy_post_request(dummy_request):
     """Make a dummy POST request to test views."""
-    request = DummyRequest()
-    request.method = 'POST'
-    return request
+    dummy_request.method = 'POST'
+    dummy_request.POST = multidict.MultiDict([('title', 'TESTadd'),
+                                              ('text', 'TESTadd')])
+    return dummy_request
