@@ -7,8 +7,6 @@ from sqlalchemy import create_engine
 from pyramid import testing
 from journalapp.models import DBSession, Base, Entry
 
-# use these to initialize the app for testing
-
 
 TEST_DATABASE_URL = 'sqlite:////tmp/test_db.sqlite'
 
@@ -55,12 +53,11 @@ def dbtransaction(request, sqlengine):
         DBSession.remove()
 
     request.addfinalizer(teardown)
-
     return connection
 
 
 @pytest.fixture(scope='session')
-def app(test_database_url, dbtransaction, config_uri):
+def app(test_database_url, config_uri, dbtransaction):
     """Create pretend app fixture of our main app."""
     from journalapp import main
     from webtest import TestApp
@@ -72,7 +69,7 @@ def app(test_database_url, dbtransaction, config_uri):
 
 
 @pytest.fixture(scope='function')
-def new_entry(request):
+def new_entry(request, dbtransaction):
     """Return a fresh new Entry and flush to the database."""
     entry = Entry(title="testblogpost", text="aaa")
     DBSession.add(entry)

@@ -25,6 +25,7 @@ def detail_view(request):
     """Return rendered single entry for entry detail page."""
     try:
         entry_id = request.matchdict['entry_id']
+        # import pdb; pdb.set_trace()
         entry = DBSession.query(Entry).get(entry_id)
         if not entry:
             return Response('Post {} does not exist.'.format(entry_id),
