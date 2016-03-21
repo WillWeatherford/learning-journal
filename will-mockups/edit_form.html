@@ -1,11 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Editing: My Most Insightful Musing Yet</title>
+    <link rel="stylesheet" type="text/css" href="stylesheet.css">
+</head>
+<body>
+
+<div class='front'>
+    <a href="/">Back to Front Page</a>
+</div>
+
 <div class='input-form'>
-    <form method='post' action='/edit/'>
     
-    <input type='text' name='title' label='Title' value='(existing)'></input>
+    <form method='post' action='/edit/'>
 
-    <input type='textarea' name='content' label='Content' value='(existing)'></input>
-
-    <input type="submit">
+    <ul>
+        <li>
+            <input class='input-title' type='entry' type='text' name='title' label='Title' value='My Most Insightful Musing Yet'></input>
+        </li>
+        <li>
+            <input class='input-text' type='text' type='textarea' name='content' label='Content' value='All the stuff I wrote...'></input>
+        </li>
+        <li>
+            <input type="submit" value='Update'>
+        </li>
+    </ul>
 
     </form>
 </div>
+
+</body>
+</html>

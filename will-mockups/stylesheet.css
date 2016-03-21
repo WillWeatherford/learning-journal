@@ -2,15 +2,48 @@ body {
     font-family: "Lucida Console", Monaco, monospace;
 }
 
+.front {
+    margin-left: 45px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+#title {
+    margin-left: 50px;
+}
+
+#new-post {
+    margin-left: 50px;
+}
+
+
 ul li {
     list-style-type: none;
+}
+
+.entries {
+    margin-top: 50px;
+}
+
+.entry {
+    margin-bottom: 50px;
+    margin-left: 10px;
+}
+
+.entry-date {
+    font-size: 10;
+    margin-bottom: 30px;
 }
 
 .input-form {
     color: blue;
 }
 
+.input-title {
+    width: 800px;
+}
 
-#new-post {
-    color: red;
+.input-text {
+    width: 800px;
+    height: 400px;
 }
