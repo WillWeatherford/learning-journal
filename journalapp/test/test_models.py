@@ -1,5 +1,5 @@
-"""Testing Model."""
-# _*_.utf8_*_
+# -*- coding: utf-8 -*-
+"""Test that Entry model addition works as expected."""
 
 
 def test_create_entry(dbtransaction, new_entry):

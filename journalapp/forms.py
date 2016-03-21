@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 """Define WTForm classes for adding and editing Entries into database."""
 
 from wtforms.validators import Length, InputRequired

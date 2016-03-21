@@ -1,5 +1,6 @@
-"""Testing views."""
-# _*_.utf8_*_
+# -*- coding: utf-8 -*-
+"""Testing views by calling the views functions directly."""
+
 from journalapp.views import (
     list_view,
     detail_view,
@@ -9,8 +10,6 @@ from journalapp.views import (
 
 from journalapp.forms import EditEntryForm, AddEntryForm
 
-
-# Testing views by calling the view functions directly.
 
 def test_list_view(dbtransaction, new_entry, dummy_get_request):
     """Test that list_view returns a Query of Entries."""

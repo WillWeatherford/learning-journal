@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """Testing routes through TestApp app fixture.
 
 Tests are designed to happen in sequence, only clearing the database after

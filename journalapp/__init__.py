@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """Initiliazes the journalapp in Pyramid."""
 import os
 from pyramid.config import Configurator
@@ -11,8 +12,6 @@ from .models import (
 
 def main(global_config, **settings):
     """Return a Pyramid WSGI application."""
-    # import pdb; pdb.set_trace()
-
     if not settings.get('sqlalchemy.url', ''):
         database_url = os.environ.get('DATABASE_URL', None)
         if database_url is not None:

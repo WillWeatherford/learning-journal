@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """Define models for learning journalapp."""
 from sqlalchemy import (
     Column,

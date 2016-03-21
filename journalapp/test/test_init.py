@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """Test that initializedb runs when called."""
 import pytest
 from journalapp.scripts.initializedb import main
