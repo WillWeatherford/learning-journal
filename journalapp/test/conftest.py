@@ -80,7 +80,6 @@ def new_entry(request):
 
     def teardown():
         DBSession.query(Entry).filter(Entry.id == entry.id).delete()
-        # DBSession.flush()
 
     request.addfinalizer(teardown)
     return entry
@@ -115,7 +114,6 @@ def dummy_post_request(request, dummy_request):
 
     def teardown():
         DBSession.query(Entry).filter(Entry.title == 'TESTadd').delete()
-        # DBSession.flush()
 
     request.addfinalizer(teardown)
     return dummy_request
