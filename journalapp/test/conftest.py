@@ -57,7 +57,7 @@ def dbtransaction(request, sqlengine):
 
 
 @pytest.fixture(scope='function')
-def app(test_database_url, config_uri, dbtransaction):
+def app(test_database_url, config_uri):
     """Create pretend app fixture of our main app."""
     from journalapp import main
     from webtest import TestApp
