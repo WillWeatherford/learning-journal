@@ -27,6 +27,6 @@ class Entry(Base):
 
     __tablename__ = "entries"
     id = Column(Integer, primary_key=True)
-    title = Column(String(128), unique=True)
+    title = Column(String(255), unique=True)
     text = Column(Text)
     created = Column(DateTime, default=datetime.datetime.utcnow)
