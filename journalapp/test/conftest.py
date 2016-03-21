@@ -107,9 +107,15 @@ def dummy_get_request(dummy_request):
 
 
 @pytest.fixture(scope='function')
-def dummy_post_request(dummy_request):
+def dummy_post_request(request, dummy_request):
     """Make a dummy POST request to test views."""
     dummy_request.method = 'POST'
     dummy_request.POST = multidict.MultiDict([('title', 'TESTadd'),
                                               ('text', 'TESTadd')])
+
+    def teardown():
+        DBSession.query(Entry).filter(Entry.title == 'TESTadd').delete()
+        # DBSession.flush()
+
+    request.addfinalizer(teardown)
     return dummy_request

@@ -5,13 +5,8 @@ from pyramid.view import view_config
 from pyramid.httpexceptions import HTTPFound
 
 from sqlalchemy.exc import DBAPIError
-
-from .models import (
-    DBSession,
-    Entry,
-)
-
-from journalapp.forms import EntryForm
+from .models import DBSession, Entry
+from journalapp.forms import EditEntryForm, AddEntryForm
 import markdown
 
 
@@ -44,8 +39,7 @@ def detail_view(request):
 def add_entry(request):
     """Display a empty form, when submitted, return to the detail page."""
     try:
-        # import pdb; pdb.set_trace()
-        form = EntryForm(request.POST)
+        form = AddEntryForm(request.POST)
         if request.method == "POST" and form.validate():
             new_entry = Entry(title=form.title.data, text=form.text.data)
             DBSession.add(new_entry)
@@ -67,7 +61,7 @@ def edit_entry(request):
             return Response('Post {} does not exist.'.format(entry_id),
                             content_type='text/plain',
                             status_int=404)
-        form = EntryForm(request.POST, entry)
+        form = EditEntryForm(request.POST, entry)
         if request.method == "POST" and form.validate():
             form.populate_obj(entry)
             DBSession.add(entry)

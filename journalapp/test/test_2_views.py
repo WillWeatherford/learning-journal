@@ -7,7 +7,7 @@ from journalapp.views import (
     edit_entry,
 )
 from journalapp.models import DBSession, Entry
-from journalapp.forms import EntryForm
+from journalapp.forms import EditEntryForm, AddEntryForm
 
 
 # Testing views by calling the view functions directly.
@@ -30,7 +30,15 @@ def test_add_view(dbtransaction, dummy_get_request):
     """Test that the add_view returns a dict containing the proper form."""
     response_dict = add_entry(dummy_get_request)
     form = response_dict.get('form', None)
-    assert isinstance(form, EntryForm)
+    assert isinstance(form, AddEntryForm)
+
+
+# def test_edit_view(dbtransaction, new_entry, dummy_get_request):
+#     """Test that the add_view returns a dict containing the proper form."""
+#     dummy_get_request.matchdict = {'entry_id': new_entry.id}
+#     response_dict = edit_entry(dummy_get_request)
+#     form = response_dict.get('form', None)
+#     assert isinstance(form, EditEntryForm)
 
 
 def test_edit_view_post(dbtransaction, new_entry, dummy_post_request):
