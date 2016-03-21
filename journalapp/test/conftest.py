@@ -21,8 +21,8 @@ def test_database_url():
 def config_uri():
     """Establish configuration uri for initialization."""
     parent_dir = os.path.dirname(__file__)
-    gparent_dir = os.path.join(parent_dir, '..')
-    ggparent_dir = os.path.join(gparent_dir, '..')
+    gparent_dir = os.path.dirname(parent_dir)
+    ggparent_dir = os.path.dirname(gparent_dir)
     return os.path.join(ggparent_dir, 'development.ini')
 
 
