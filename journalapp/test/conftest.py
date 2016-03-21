@@ -40,7 +40,7 @@ def sqlengine(request, test_database_url):
     return engine
 
 
-@pytest.fixture(scope='session')
+@pytest.fixture(scope='function')
 def dbtransaction(request, sqlengine):
     """Create database transaction connection."""
     connection = sqlengine.connect()
@@ -56,7 +56,7 @@ def dbtransaction(request, sqlengine):
     return connection
 
 
-@pytest.fixture(scope='session')
+@pytest.fixture(scope='function')
 def app(test_database_url, config_uri, dbtransaction):
     """Create pretend app fixture of our main app."""
     from journalapp import main
@@ -69,7 +69,7 @@ def app(test_database_url, config_uri, dbtransaction):
 
 
 @pytest.fixture(scope='function')
-def new_entry(request, dbtransaction):
+def new_entry(request):
     """Return a fresh new Entry and flush to the database."""
     entry = Entry(title="testblogpost", text="aaa")
     DBSession.add(entry)
@@ -82,7 +82,7 @@ def new_entry(request, dbtransaction):
     return entry
 
 
-@pytest.fixture(scope='session')
+@pytest.fixture(scope='function')
 def dummy_request():
     """Make a base generic dummy request to be used."""
     request = testing.DummyRequest()
