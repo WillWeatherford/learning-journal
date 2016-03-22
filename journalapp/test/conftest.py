@@ -114,3 +114,12 @@ def dummy_post_request(request, dummy_request):
 
     request.addfinalizer(teardown)
     return dummy_request
+
+
+@pytest.fixture()
+def auth_env():
+    """Set username and password into os environment."""
+    from cryptacular.bcrypt import BCRYPTPasswordManager
+    manager = BCRYPTPasswordManager()
+    os.environ['AUTH_USERNAME'] = 'admin'
+    os.environ['AUTH_PASSWORD'] = manager.encode('secret')

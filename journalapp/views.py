@@ -10,6 +10,7 @@ from pyramid.view import view_config
 
 from .models import DBSession, Entry
 from .forms import EditEntryForm, AddEntryForm, LoginForm
+from .security import check_pw
 import markdown
 
 
@@ -83,13 +84,12 @@ def login(request):
         password = request.params['password']
 
         settings = request.registry.settings
-        manager = BCRYPTPasswordManager()
 
         real_username = settings.get('auth.username', '')
         hashed_pw = settings.get('auth.password', '')
 
         if username == real_username:
-            if manager.check(hashed_pw, password):
+            if check_pw(hashed_pw, password):
                 headers = remember(request, username)
                 return HTTPFound(request.route_url('list'), headers=headers)
             else:

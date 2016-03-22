@@ -1,6 +1,12 @@
 """Set up security standards for the journal app."""
 # from .models import Entry
 from pyramid.security import Allow, Everyone, ALL_PERMISSIONS
+from cryptacular.bcrypt import BCRYPTPasswordManager
+
+
+def check_pw(hashed_pw, password):
+    manager = BCRYPTPasswordManager()
+    return manager.check(hashed_pw, password)
 
 
 USERS = {'editor': 'editor',

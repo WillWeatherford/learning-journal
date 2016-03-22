@@ -36,7 +36,7 @@ def main(global_config, **settings):
         authentication_policy=AuthTktAuthenticationPolicy(
             secret=auth_secret,
             hashalg='sha512',
-            callback=groupfinder
+            # callback=groupfinder
         ),
         authorization_policy=ACLAuthorizationPolicy(),
         root_factory=DefaultRoot,
