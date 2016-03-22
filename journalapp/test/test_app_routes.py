@@ -6,6 +6,10 @@ session is finished.
 """
 import os
 
+GOOD_LOGIN_PARAMS = {
+    'username': 'admin',
+    'password': 'secret'
+}
 
 TEST_PARAMS = {n: {'title': 'TEST{}'.format(n), 'text': 'TEST{}'.format(n)}
                for n in range(4)}
@@ -40,6 +44,21 @@ def test_check_pw_fail(auth_env):
     assert not check_pw(hashed_pw, 'not secret')
 
 
+def test_init_no_auth_tkt(dbtransaction, app):
+    """Test that the geting the front page of the app has no auth cookies."""
+    response = app.get('/')
+    for cookie in response.headers.getall('Set-Cookie'):
+        if cookie.startswith('auth_tkt'):
+            assert False, "Auth tickets found."
+    else:
+        assert True, "Auth tickets not found."
+    for cookie, value in response.request.headers.items():
+        if cookie == 'Cookie' and value.startswith('auth_tkt'):
+            assert False, "Auth tickets found."
+    else:
+        assert True, "Auth tickets not found."
+
+
 def test_list_get(dbtransaction, app):
     """Test if model initialized with correct vals."""
     response = app.get('/')
@@ -54,35 +73,21 @@ def test_login_get(dbtransaction, app):
 
 def test_login_post_success(dbtransaction, app, auth_env):
     """Test if login view can be accessed without permission."""
-    params = {
-        'username': 'admin',
-        'password': 'secret'
-    }
-    response = app.post('/login', params=params, status='3*')
+    response = app.post('/login', params=GOOD_LOGIN_PARAMS, status='3*')
     assert response.status_code == 302
 
 
 def test_login_post_redirect(dbtransaction, app, auth_env):
     """Test if login view can be accessed without permission."""
-    params = {
-        'username': 'admin',
-        'password': 'secret'
-    }
-    response = app.post('/login', params=params, status='3*')
+    response = app.post('/login', params=GOOD_LOGIN_PARAMS, status='3*')
     loc_parts = response.location.split('/')
     assert loc_parts[-1] == ''
 
 
 def test_login_post_auth_tkt(dbtransaction, app, auth_env):
     """Test if login view can be accessed without permission."""
-    params = {
-        'username': 'admin',
-        'password': 'secret'
-    }
-    response = app.post('/login', params=params, status='3*')
-    headers = response.headers
-    cookies = headers.getall('Set-Cookie')
-    for cookie in cookies:
+    response = app.post('/login', params=GOOD_LOGIN_PARAMS, status='3*')
+    for cookie in response.headers.getall('Set-Cookie'):
         if cookie.startswith('auth_tkt'):
             break
     else:
@@ -91,12 +96,37 @@ def test_login_post_auth_tkt(dbtransaction, app, auth_env):
 
 def test_login_post_fail(dbtransaction, app, auth_env):
     """Test if login view can be accessed without permission."""
-    params = {
+    bad_params = {
         'username': 'admin',
         'password': 'not secret'
     }
-    response = app.post('/login', params=params)
+    response = app.post('/login', params=bad_params)
     assert response.status_code == 200
+
+
+def test_logout(dbtransaction, app):
+    """Test that unauthorized user can go to the logout page."""
+    response = app.get('/logout', status='3*')
+    assert response.status_code == 302
+
+
+def test_logged_out(dbtransaction, app):
+    """Test that unauthorized user can go to the logout page."""
+    response = app.get('/logged_out')
+    assert response.status_code == 200
+
+
+def test_logout_no_auth_tkt(dbtransaction, authenticated_app):
+    """Test that authenticated app deletes cookies on log out."""
+    response = authenticated_app.get('/logout')
+    for cookie in response.headers.getall('Set-Cookie'):
+        if cookie.startswith('auth_tkt'):
+            cookie_parts = dict([tuple(part.split('='))
+                                 for part in cookie.split('; ')])
+            if cookie_parts['auth_tkt'] != '':
+                assert False, "Auth tickets found."
+    else:
+        assert True, "Auth tickets not found."
 
 
 def test_add_no_permission(dbtransaction, app):
@@ -107,12 +137,8 @@ def test_add_no_permission(dbtransaction, app):
 
 def test_add_with_permission(dbtransaction, authenticated_app):
     """Test that add route returns a 403 if not permitted."""
-    params = {
-        'username': 'admin',
-        'password': 'secret'
-    }
-    response2 = authenticated_app.get('/add')
-    assert response2.status_code == 200
+    response = authenticated_app.get('/add')
+    assert response.status_code == 200
 
 
 # def test_add_get(dbtransaction, app):

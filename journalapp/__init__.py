@@ -50,6 +50,7 @@ def main(global_config, **settings):
     config.add_route('edit', '/edit/{entry_id}')
     config.add_route('login', '/login')
     config.add_route('logout', '/logout')
+    config.add_route('logged_out', '/logged_out')
 
     config.scan()
     return config.make_wsgi_app()

@@ -101,11 +101,19 @@ def login(request):
 
 
 @view_config(route_name='logout',
-             renderer='templates/logout.jinja2',
              permission='view')
 def logout(request):
     """Log user out."""
-    forget(request)
+    headers = forget(request)
+    return HTTPFound(location=request.route_url('logged_out'),
+                     headers=headers)
+
+
+@view_config(route_name='logged_out',
+             renderer='templates/logout.jinja2',
+             permission='view')
+def logged_out(request):
+    """Simple text landing page after logout."""
     return {}
 
 
