@@ -3,8 +3,13 @@
 """Define WTForm classes for adding and editing Entries into database."""
 
 from wtforms.validators import Length, InputRequired
-from wtforms import Form, StringField, TextAreaField
-from wtforms import ValidationError
+from wtforms import (
+    Form,
+    StringField,
+    TextAreaField,
+    PasswordField,
+    ValidationError
+)
 
 from .models import DBSession, Entry
 
@@ -39,3 +44,17 @@ class AddEntryForm(EditEntryForm):
 
     title = StringField(
         'Title', ADD_VALIDATORS)
+
+
+class LoginForm(Form):
+    """Form for logging in user."""
+
+    username = StringField(
+        'Username',
+        [Length(min=4, max=32),
+         InputRequired(message='Username is required.')
+         ])
+    password = PasswordField(
+        'Password',
+        [InputRequired(message='Password is required.')
+         ])

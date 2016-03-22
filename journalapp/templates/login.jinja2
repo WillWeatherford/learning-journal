@@ -1,0 +1,24 @@
+{% extends "base.jinja2" %}
+{% block content %}
+
+<div>
+<form method='POST' action=''>
+    <div>{{form.username.label}}: <p>{{form.username()}}</p></div>
+        <p class="errors">
+            {% if form.username.errors %}
+                {{form.username.errors.pop()}}
+            {% endif %}
+        </p>
+
+    <div>{{form.password.label}}: {{form.password() | markdown}}</div>
+        <p class="errors">
+            {% if form.password.errors %}
+                {{form.password.errors.pop()}}
+            {% endif %}
+        </p>
+
+    <div><INPUT TYPE="submit" VALUE="submit"></div>
+</form>
+</div>
+
+{% endblock %}

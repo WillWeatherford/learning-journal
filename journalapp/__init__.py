@@ -2,12 +2,17 @@
 """Initiliazes the journalapp in Pyramid."""
 import os
 from pyramid.config import Configurator
+from pyramid.authentication import AuthTktAuthenticationPolicy
+from pyramid.authorization import ACLAuthorizationPolicy
+from cryptacular.bcrypt import BCRYPTPasswordManager
 from sqlalchemy import engine_from_config
 
 from .models import (
     DBSession,
     Base,
 )
+
+from .security import DefaultRoot
 
 
 def main(global_config, **settings):
@@ -17,15 +22,32 @@ def main(global_config, **settings):
         if database_url is not None:
             settings['sqlalchemy.url'] = database_url
 
+    settings['auth.username'] = os.environ.get('AUTH_USERNAME', 'admin')
+    manager = BCRYPTPasswordManager()
+    settings['auth.password'] = os.environ.get(
+        'AUTH_PASSWORD', manager.encode('secret')
+    )
+    auth_secret = os.environ.get('JOURNAL_AUTH_SECRET', 'supersecret')
     engine = engine_from_config(settings, 'sqlalchemy.')
     DBSession.configure(bind=engine)
     Base.metadata.bind = engine
-    config = Configurator(settings=settings)
+    config = Configurator(
+        settings=settings,
+        authentication_policy=AuthTktAuthenticationPolicy(
+            secret=auth_secret,
+            hashalg='sha512'),
+        authorization_policy=ACLAuthorizationPolicy,
+        root_factory=DefaultRoot,
+    )
     config.include('pyramid_jinja2')
     config.add_static_view('static', 'static', cache_max_age=3600)
-    config.add_route('list', '/')
-    config.add_route('detail', '/detail/{entry_id}')
-    config.add_route('add', '/add')
-    config.add_route('edit', '/edit/{entry_id}')
+
+    config.add_route('list', '/', permission='view')
+    config.add_route('detail', '/detail/{entry_id}', permission='view')
+    config.add_route('add', '/add', permission='create')
+    config.add_route('edit', '/edit/{entry_id}', permission='edit')
+    config.add_route('login', '/login', permission='view')
+    config.add_route('logout', '/logout', permission='view')
+
     config.scan()
     return config.make_wsgi_app()
