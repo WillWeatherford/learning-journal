@@ -27,6 +27,8 @@ class DefaultRoot(object):
 
     __acl__ = [
         (Allow, Everyone, 'view'),
+        # (Allow, 'admin', 'edit'),
+        # (Allow, 'admin', 'create'),
         (Allow, 'g:editors', 'edit'),
         (Allow, 'g:editors', 'create'),
         (Allow, 'g:admins', ALL_PERMISSIONS)

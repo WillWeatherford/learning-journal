@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """SQLAlchemy views to render learning journal."""
 from jinja2 import Markup
-from cryptacular.bcrypt import BCRYPTPasswordManager
+# from cryptacular.bcrypt import BCRYPTPasswordManager
 
 from pyramid.httpexceptions import HTTPFound
 from pyramid.response import Response
@@ -91,7 +91,8 @@ def login(request):
         if username == real_username:
             if check_pw(hashed_pw, password):
                 headers = remember(request, username)
-                return HTTPFound(request.route_url('list'), headers=headers)
+                return HTTPFound(location=request.route_url('list'),
+                                 headers=headers)
             else:
                 form.password.errors.append('Invalid password.')
         else:

@@ -123,3 +123,13 @@ def auth_env():
     manager = BCRYPTPasswordManager()
     os.environ['AUTH_USERNAME'] = 'admin'
     os.environ['AUTH_PASSWORD'] = manager.encode('secret')
+
+
+@pytest.fixture
+def authenticated_app(app, auth_env):
+    params = {
+        'username': 'admin',
+        'password': 'secret'
+    }
+    app.post('/login', params=params, status='3*')
+    return app
