@@ -15,8 +15,7 @@ import markdown
 
 @view_config(route_name='list',
              renderer='templates/list.jinja2',
-             # permission='view'
-             )
+             permission='view')
 def list_view(request):
     """Return rendered list of entries for journal home page."""
     entries = DBSession.query(Entry).order_by(Entry.created.desc())
@@ -25,8 +24,7 @@ def list_view(request):
 
 @view_config(route_name='detail',
              renderer='templates/detail.jinja2',
-             # permission='view'
-             )
+             permission='view')
 def detail_view(request):
     """Return rendered single entry for entry detail page."""
     entry_id = request.matchdict['entry_id']
@@ -40,8 +38,7 @@ def detail_view(request):
 
 @view_config(route_name='add',
              renderer='templates/add-edit.jinja2',
-             # permission='edit'
-             )
+             permission='create')
 def add_entry(request):
     """Display a empty form, when submitted, return to the detail page."""
     form = AddEntryForm(request.POST)
@@ -56,8 +53,7 @@ def add_entry(request):
 
 @view_config(route_name='edit',
              renderer='templates/add-edit.jinja2',
-             # permission='edit'
-             )
+             permission='edit')
 def edit_entry(request):
     """Display editing page to edit entries, return to detail page."""
     entry_id = request.matchdict['entry_id']
@@ -78,8 +74,7 @@ def edit_entry(request):
 
 @view_config(route_name='login',
              renderer='templates/login.jinja2',
-             # permission='view'
-             )
+             permission='view')
 def login(request):
     """Log user in."""
     form = LoginForm(request.POST)
@@ -106,8 +101,7 @@ def login(request):
 
 @view_config(route_name='logout',
              renderer='templates/logout.jinja2',
-             # permission='view'
-             )
+             permission='view')
 def logout(request):
     """Log user out."""
     forget(request)

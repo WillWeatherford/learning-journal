@@ -12,7 +12,7 @@ from .models import (
     Base,
 )
 
-from .security import DefaultRoot
+from .security import DefaultRoot, groupfinder
 
 
 def main(global_config, **settings):
@@ -35,19 +35,21 @@ def main(global_config, **settings):
         settings=settings,
         authentication_policy=AuthTktAuthenticationPolicy(
             secret=auth_secret,
-            hashalg='sha512'),
-        authorization_policy=ACLAuthorizationPolicy,
+            hashalg='sha512',
+            callback=groupfinder
+        ),
+        authorization_policy=ACLAuthorizationPolicy(),
         root_factory=DefaultRoot,
     )
     config.include('pyramid_jinja2')
     config.add_static_view('static', 'static', cache_max_age=3600)
 
-    config.add_route('list', '/', permission='view')
-    config.add_route('detail', '/detail/{entry_id}', permission='view')
-    config.add_route('add', '/add', permission='create')
-    config.add_route('edit', '/edit/{entry_id}', permission='edit')
-    config.add_route('login', '/login', permission='view')
-    config.add_route('logout', '/logout', permission='view')
+    config.add_route('list', '/')
+    config.add_route('detail', '/detail/{entry_id}')
+    config.add_route('add', '/add')
+    config.add_route('edit', '/edit/{entry_id}')
+    config.add_route('login', '/login')
+    config.add_route('logout', '/logout')
 
     config.scan()
     return config.make_wsgi_app()
