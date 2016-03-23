@@ -42,7 +42,8 @@ def detail_view(request):
              permission='create')
 def add_entry(request):
     """Display a empty form, when submitted, return to the detail page."""
-    form = AddEntryForm(request.POST)
+    context = get_auth_tkt_from_request(request)
+    form = AddEntryForm(request.POST, csrf_context=context)
     if request.method == "POST" and form.validate():
         new_entry = Entry(title=form.title.data, text=form.text.data)
         DBSession.add(new_entry)
@@ -63,7 +64,8 @@ def edit_entry(request):
         return Response('Post {} does not exist.'.format(entry_id),
                         content_type='text/plain',
                         status_int=404)
-    form = EditEntryForm(request.POST, entry)
+    context = get_auth_tkt_from_request(request)
+    form = EditEntryForm(request.POST, entry, csrf_context=context)
     if request.method == "POST" and form.validate():
         form.populate_obj(entry)
         DBSession.add(entry)
@@ -78,7 +80,8 @@ def edit_entry(request):
              permission='view')
 def login(request):
     """Log user in."""
-    form = LoginForm(request.POST)
+    context = get_auth_tkt_from_request(request)
+    form = LoginForm(request.POST, csrf_context=context)
     if request.method == 'POST' and form.validate():
         username = request.params['username']
         password = request.params['password']
@@ -128,6 +131,16 @@ def _delete_one(request):
     entry_id = request.matchdict['entry_id']
     DBSession.query(Entry).get(entry_id).delete()
     return HTTPFound(location=request.route_url('list'))
+
+
+def get_auth_tkt_from_request(request):
+    """Get an auth_tkt from a request."""
+    request_cookies = request.headers.items()
+    auth_tkts = [value for cookie, value in request_cookies
+                 if cookie == 'Cookie' and value.startswith('auth_tkt')]
+    if not auth_tkts:
+        return ''
+    return auth_tkts[0]
 
 
 def render_markdown(content, linenums=False, pygments_style='default'):

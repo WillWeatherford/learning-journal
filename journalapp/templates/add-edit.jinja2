@@ -3,6 +3,7 @@
 
 <div>
 <form method='POST' action=''>
+    {{form.csrf_token}}
     <div>{{form.title.label}}: <p>{{form.title(size = '100')}}</p></div>
         <p class="errors">
             {% if form.title.errors %}

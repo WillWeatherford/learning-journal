@@ -3,6 +3,7 @@
 
 <div>
 <form method='POST' action=''>
+    {{form.csrf_token}}
     <div>{{form.username.label}}: <p>{{form.username()}}</p></div>
         <p class="errors">
             {% if form.username.errors %}

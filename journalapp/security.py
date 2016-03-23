@@ -2,9 +2,15 @@
 # from .models import Entry
 from pyramid.security import Allow, Everyone, ALL_PERMISSIONS
 from cryptacular.bcrypt import BCRYPTPasswordManager
+from wtforms.ext.csrf.form import SecureForm
+from hashlib import md5
+
+
+SECRET_KEY = 'supersecret'
 
 
 def check_pw(hashed_pw, password):
+    """Return True if provided hash matches against the provided password."""
     manager = BCRYPTPasswordManager()
     return manager.check(hashed_pw, password)
 
@@ -39,20 +45,16 @@ class DefaultRoot(object):
         self.request = request
 
 
-# class EntryRoot(object):
+class TotesSecureForm(SecureForm):
+    """Secure form subclass with CSRF protection."""
 
-#     __name__ = 'entry'
+    def generate_csrf_token(self, csrf_context):
+        """Generate a CSRF Token."""
+        text = SECRET_KEY + csrf_context
+        token = md5(text.encode('utf-8')).hexdigest()
+        return token
 
-#     @property
-#     def __parent__(self):
-#         return DefaultRoot(self.request)
-
-#     def __init__(self, request):
-#         self.request = request
-
-#     def __getitem__(self, name):
-#         entry_obj = Entry.by_id(name)
-#         if entry_obj is None:
-#             raise KeyError(name)
-#         entry_obj.__parent__ = self
-#         return entry_obj
+    def validate_csrf_token(self, field):
+        """Validate a given CSRF token."""
+        if field.data != field.current_token:
+            raise ValueError('Invalid CSRF')

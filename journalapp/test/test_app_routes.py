@@ -39,16 +39,14 @@ def test_check_pw_fail(auth_env):
 def test_init_no_auth_tkt(dbtransaction, app):
     """Test that the geting the front page of the app has no auth cookies."""
     response = app.get('/')
-    for cookie in response.headers.getall('Set-Cookie'):
-        if cookie.startswith('auth_tkt'):
-            assert False, "Auth tickets found."
-    else:
-        assert True, "Auth tickets not found."
-    for cookie, value in response.request.headers.items():
-        if cookie == 'Cookie' and value.startswith('auth_tkt'):
-            assert False, "Auth tickets found."
-    else:
-        assert True, "Auth tickets not found."
+    response_cookies = response.headers.getall('Set-Cookie')
+    auth_tkts = [ck for ck in response_cookies if ck.startswith('auth_tkt')]
+    assert not auth_tkts
+
+    request_cookies = response.request.headers.items()
+    auth_tkts = [value for cookie, value in request_cookies
+                 if cookie == 'Cookie' and value.startswith('auth_tkt')]
+    assert not auth_tkts
 
 
 def test_list_get(dbtransaction, app):
@@ -79,11 +77,9 @@ def test_login_post_redirect(dbtransaction, app, auth_env, good_login_params):
 def test_login_post_auth_tkt(dbtransaction, app, auth_env, good_login_params):
     """Test if login view can be accessed without permission."""
     response = app.post('/login', params=good_login_params, status='3*')
-    for cookie in response.headers.getall('Set-Cookie'):
-        if cookie.startswith('auth_tkt'):
-            break
-    else:
-        assert False, "Auth tickets not found."
+    response_cookies = response.headers.getall('Set-Cookie')
+    auth_tkts = [ck for ck in response_cookies if ck.startswith('auth_tkt')]
+    assert auth_tkts
 
 
 def test_login_post_fail(dbtransaction, app, auth_env):

@@ -4,7 +4,6 @@
 
 from wtforms.validators import Length, InputRequired
 from wtforms import (
-    Form,
     StringField,
     TextAreaField,
     PasswordField,
@@ -12,6 +11,7 @@ from wtforms import (
 )
 
 from .models import DBSession, Entry
+from .security import TotesSecureForm
 
 
 def unique_title(form, field):
@@ -30,7 +30,7 @@ EDIT_VALIDATORS = [
 ADD_VALIDATORS = EDIT_VALIDATORS + [unique_title]
 
 
-class EditEntryForm(Form):
+class EditEntryForm(TotesSecureForm):
     """Form used for both editing Entry models."""
 
     title = StringField(
@@ -46,7 +46,7 @@ class AddEntryForm(EditEntryForm):
         'Title', ADD_VALIDATORS)
 
 
-class LoginForm(Form):
+class LoginForm(TotesSecureForm):
     """Form for logging in user."""
 
     username = StringField(

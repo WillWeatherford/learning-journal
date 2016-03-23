@@ -13,6 +13,7 @@ TEST_DATABASE_URL = 'sqlite:////tmp/test_db.sqlite'
 
 @pytest.fixture(scope='session')
 def good_login_params():
+    """Create correct login information."""
     return {'username': 'admin', 'password': 'secret'}
 
 
@@ -139,6 +140,7 @@ def auth_env(good_login_params):
 
 @pytest.fixture()
 def authenticated_app(app, auth_env, good_login_params):
+    """Create a version of the app with an authenticated user."""
     app.post('/login', params=good_login_params, status='3*')
     return app
 
@@ -151,13 +153,13 @@ TEST_PARAMS = {
 
 @pytest.fixture()
 def authenticated_app_one_entry(authenticated_app, auth_env):
+    """Create a version of app with authenticated user and one Entry."""
     authenticated_app.post('/add', params=TEST_PARAMS, status='3*')
-
-    # cleanup by deleting all
     return authenticated_app
 
 
 @pytest.fixture()
 def unauthenticated_app_one_entry(authenticated_app_one_entry):
+    """Create a version of app with unauthenticated user and one Entry."""
     authenticated_app_one_entry.get('/logout', status='3*')
     return authenticated_app_one_entry
