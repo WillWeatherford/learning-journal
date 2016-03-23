@@ -1,8 +1,12 @@
 {% extends "base.jinja2" %}
 
 {% block content %}
-    <a href="{{request.route_url('edit', entry_id=entry.id)}}">Edit
-    </a>
+
+    <div class='edit-button'>
+        {% if request.has_permission('edit') %}
+    <a href="{{request.route_url('edit', entry_id=entry.id)}}">Edit</a>
+        {% endif %}
+    </div>
 
     <h4>{{entry.title}}</h4>
     <p>{{entry.created.strftime('%Y-%m-%d at %H:%M UTC')}}</p>

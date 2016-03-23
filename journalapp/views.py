@@ -117,6 +117,19 @@ def logged_out(request):
     return {}
 
 
+@view_config(route_name='delete_all', permission='delete')
+def _delete_all(request):
+    DBSession.query(Entry).delete()
+    return HTTPFound(location=request.route_url('list'))
+
+
+@view_config(route_name='delete_one', permission='delete')
+def _delete_one(request):
+    entry_id = request.matchdict['entry_id']
+    DBSession.query(Entry).get(entry_id).delete()
+    return HTTPFound(location=request.route_url('list'))
+
+
 def render_markdown(content, linenums=False, pygments_style='default'):
     """Jinja2 filter to render markdown text. Copied but no understood."""
     ext = "codehilite(linenums={linenums}, pygments_style={pygments_style})"

@@ -6,14 +6,6 @@ session is finished.
 """
 import os
 
-GOOD_LOGIN_PARAMS = {
-    'username': 'admin',
-    'password': 'secret'
-}
-
-TEST_PARAMS = {n: {'title': 'TEST{}'.format(n), 'text': 'TEST{}'.format(n)}
-               for n in range(4)}
-
 
 def test_get_username(auth_env):
     """Test we can get the username from the os environment."""
@@ -71,22 +63,22 @@ def test_login_get(dbtransaction, app):
     assert response.status_code == 200
 
 
-def test_login_post_success(dbtransaction, app, auth_env):
+def test_login_post_success(dbtransaction, app, auth_env, good_login_params):
     """Test if login view can be accessed without permission."""
-    response = app.post('/login', params=GOOD_LOGIN_PARAMS, status='3*')
+    response = app.post('/login', params=good_login_params, status='3*')
     assert response.status_code == 302
 
 
-def test_login_post_redirect(dbtransaction, app, auth_env):
+def test_login_post_redirect(dbtransaction, app, auth_env, good_login_params):
     """Test if login view can be accessed without permission."""
-    response = app.post('/login', params=GOOD_LOGIN_PARAMS, status='3*')
+    response = app.post('/login', params=good_login_params, status='3*')
     loc_parts = response.location.split('/')
     assert loc_parts[-1] == ''
 
 
-def test_login_post_auth_tkt(dbtransaction, app, auth_env):
+def test_login_post_auth_tkt(dbtransaction, app, auth_env, good_login_params):
     """Test if login view can be accessed without permission."""
-    response = app.post('/login', params=GOOD_LOGIN_PARAMS, status='3*')
+    response = app.post('/login', params=good_login_params, status='3*')
     for cookie in response.headers.getall('Set-Cookie'):
         if cookie.startswith('auth_tkt'):
             break
@@ -136,52 +128,99 @@ def test_add_no_permission(dbtransaction, app):
 
 
 def test_add_with_permission(dbtransaction, authenticated_app):
-    """Test that add route returns a 403 if not permitted."""
+    """Test that add route returns a 200 if authenticated."""
     response = authenticated_app.get('/add')
     assert response.status_code == 200
 
 
-# def test_add_get(dbtransaction, app):
-#     """TEST that  makes sure user can load add page."""
-#     response = app.get('/add')
-#     assert response.status_code == 200
+def test_no_permission_add_link(dbtransaction, app):
+    """Test that the "add" link does not show up when not authenticated."""
+    response = app.get('/')
+    links = response.html.find_all('a')
+    for link in links:
+        href = link.get('href')
+        if href.endswith('/add'):
+            assert False, "Add link found when not supposed to be."
+    assert True
 
 
-# def test_add_post(dbtransaction, app):
-#     """Test that add view creates a new Entry in database."""
-#     response = app.post('/add', params=TEST_PARAMS[0], status='3*')
-#     assert response.status_code == 302
-#     loc_parts = response.location.split('/')
-#     assert loc_parts[-2] == 'detail' and loc_parts[-1].isdigit()
+def test_permission_add_link(dbtransaction, authenticated_app):
+    """Test that the "add" link does show up when authenticated."""
+    response = authenticated_app.get('/')
+    links = response.html.find_all('a')
+    for link in links:
+        href = link.get('href')
+        if href.endswith('/add'):
+            break
+    else:
+        assert False, "Add link found when not supposed to be."
 
 
-# def test_detail_get(dbtransaction, app):
-#     """Test if model initialized with correct vals."""
-#     # need to be Authenticated.
-#     response = app.post('/add', params=TEST_PARAMS[1], status='3*')
-#     new_entry_id = response.location.split('/')[-1]
-#     response = app.get('/detail/{}'.format(new_entry_id))
-#     assert response.status_code == 200
+def test_no_permission_can_view(dbtransaction, unauthenticated_app_one_entry):
+    """Test that unauthenticated user can still view the detail of an entry."""
+    app = unauthenticated_app_one_entry
+    response = app.get('/detail/1')
+    assert response.status_code == 200
 
 
-# def test_edit_get(dbtransaction, app):
-#     """TEST that  makes sure user can load edit page."""
-#     response = app.post('/add', params=TEST_PARAMS[2], status='3*')
-#     new_entry_id = response.location.split('/')[-1]
-#     response = app.get('/edit/{}'.format(new_entry_id))
-#     assert response.status_code == 200
+def test_no_permission_edit_link(dbtransaction, unauthenticated_app_one_entry):
+    """Test that the "edit" link does not show up when not authenticated."""
+    app = unauthenticated_app_one_entry
+    response = app.get('/detail/1')
+    links = response.html.find_all('a')
+    for link in links:
+        href = link.get('href')
+        if href.endswith('/edit/1'):
+            assert False, "edit link found when not supposed to be."
+    assert True
 
 
-# def test_edit_post(dbtransaction, app):
-#     """Test that edit view can edit an exiting Entry."""
-#     response1 = app.post('/add', params=TEST_PARAMS[3], status='3*')
-#     new_entry_id = response1.location.split('/')[-1]
-#     params = {
-#         'title': 'EDIT TEST',
-#         'text': 'EDIT TEST'
-#     }
-#     response2 = app.post('/edit/{}'.format(new_entry_id),
-#                          params=params, status='3*')
-#     assert response2.status_code == 302
-#     loc_parts = response2.location.split('/')
-#     assert loc_parts[-2] == 'detail' and loc_parts[-1].isdigit()
+def test_permission_edit_link(dbtransaction, authenticated_app_one_entry):
+    """Test that the "edit" link does show up when authenticated."""
+    app = authenticated_app_one_entry
+    response = app.get('/detail/1')
+    links = response.html.find_all('a')
+    for link in links:
+        href = link.get('href')
+        if href.endswith('/edit/1'):
+            break
+    else:
+        assert False, "Edit link not found for authorized user."
+
+
+def test_permission_add_post(dbtransaction, authenticated_app):
+    """Test that add view creates a new Entry in database."""
+    app = authenticated_app
+    params = {
+        'title': 'TEST2',
+        'text': 'TEST2',
+    }
+    response = app.post('/add', params=params, status='3*')
+    assert response.status_code == 302
+    loc_parts = response.location.split('/')
+    assert loc_parts[-2] == 'detail' and loc_parts[-1].isdigit()
+
+
+def test_permission_edit_get(dbtransaction, authenticated_app_one_entry):
+    """TEST that  makes sure authenticated user can load edit page."""
+    response = authenticated_app_one_entry.get('/edit/1')
+    assert response.status_code == 200
+
+
+def test_no_permission_edit_get(dbtransaction, unauthenticated_app_one_entry):
+    """TEST that  makes sure authenticated user can load edit page."""
+    response = unauthenticated_app_one_entry.get('/edit/1', status='4*')
+    assert response.status_code == 403
+
+
+def test_edit_post(dbtransaction, authenticated_app_one_entry):
+    """Test that edit view can edit an exiting Entry."""
+    app = authenticated_app_one_entry
+    params = {
+        'title': 'EDIT TEST',
+        'text': 'EDIT TEST'
+    }
+    response = app.post('/edit/1', params=params, status='3*')
+    assert response.status_code == 302
+    loc_parts = response.location.split('/')
+    assert loc_parts[-2] == 'detail' and loc_parts[-1].isdigit()

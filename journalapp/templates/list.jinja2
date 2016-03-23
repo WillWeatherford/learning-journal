@@ -2,8 +2,11 @@
 
 {% block content %}
 
-     <a href="{{request.route_url('add')}}">NewEntry</a>
-
+    <div class='add-button'>
+        {% if request.has_permission('create') %}
+            <a href="{{request.route_url('add')}}">NewEntry</a>
+        {% endif %}
+    </div>
     {% for entry in entries %}
 
         <h4>

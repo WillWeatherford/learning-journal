@@ -12,6 +12,11 @@ TEST_DATABASE_URL = 'sqlite:////tmp/test_db.sqlite'
 
 
 @pytest.fixture(scope='session')
+def good_login_params():
+    return {'username': 'admin', 'password': 'secret'}
+
+
+@pytest.fixture(scope='session')
 def test_database_url():
     """Establish test database url as a fixture for entire session."""
     return TEST_DATABASE_URL
@@ -40,7 +45,7 @@ def sqlengine(request, test_database_url):
     return engine
 
 
-@pytest.fixture(scope='function')
+@pytest.fixture()
 def dbtransaction(request, sqlengine):
     """Create database transaction connection."""
     connection = sqlengine.connect()
@@ -56,8 +61,8 @@ def dbtransaction(request, sqlengine):
     return connection
 
 
-@pytest.fixture(scope='function')
-def app(test_database_url, config_uri):
+@pytest.fixture()
+def app(request, test_database_url, config_uri, good_login_params):
     """Create pretend app fixture of our main app."""
     from journalapp import main
     from webtest import TestApp
@@ -65,10 +70,17 @@ def app(test_database_url, config_uri):
     settings = get_appsettings(config_uri)
     settings['sqlalchemy.url'] = test_database_url
     app = main({}, **settings)
-    return TestApp(app)
+    test_app = TestApp(app)
+
+    def teardown():
+        test_app.post('/login', params=good_login_params, status='3*')
+        test_app.get('/delete_all')
+
+    request.addfinalizer(teardown)
+    return test_app
 
 
-@pytest.fixture(scope='function')
+@pytest.fixture()
 def new_entry(request):
     """Return a fresh new Entry and flush to the database."""
     entry = Entry(title="testblogpost", text="aaa")
@@ -82,7 +94,7 @@ def new_entry(request):
     return entry
 
 
-@pytest.fixture(scope='function')
+@pytest.fixture()
 def dummy_request():
     """Make a base generic dummy request to be used."""
     request = testing.DummyRequest()
@@ -94,7 +106,7 @@ def dummy_request():
     return request
 
 
-@pytest.fixture(scope='function')
+@pytest.fixture()
 def dummy_get_request(dummy_request):
     """Make a dummy GET request to test views."""
     dummy_request.method = 'GET'
@@ -102,7 +114,7 @@ def dummy_get_request(dummy_request):
     return dummy_request
 
 
-@pytest.fixture(scope='function')
+@pytest.fixture()
 def dummy_post_request(request, dummy_request):
     """Make a dummy POST request to test views."""
     dummy_request.method = 'POST'
@@ -117,19 +129,35 @@ def dummy_post_request(request, dummy_request):
 
 
 @pytest.fixture()
-def auth_env():
+def auth_env(good_login_params):
     """Set username and password into os environment."""
     from cryptacular.bcrypt import BCRYPTPasswordManager
     manager = BCRYPTPasswordManager()
-    os.environ['AUTH_USERNAME'] = 'admin'
-    os.environ['AUTH_PASSWORD'] = manager.encode('secret')
+    os.environ['AUTH_USERNAME'] = good_login_params['username']
+    os.environ['AUTH_PASSWORD'] = manager.encode(good_login_params['password'])
 
 
-@pytest.fixture
-def authenticated_app(app, auth_env):
-    params = {
-        'username': 'admin',
-        'password': 'secret'
-    }
-    app.post('/login', params=params, status='3*')
+@pytest.fixture()
+def authenticated_app(app, auth_env, good_login_params):
+    app.post('/login', params=good_login_params, status='3*')
     return app
+
+
+TEST_PARAMS = {
+    'title': 'TEST',
+    'text': 'TEST'
+}
+
+
+@pytest.fixture()
+def authenticated_app_one_entry(authenticated_app, auth_env):
+    authenticated_app.post('/add', params=TEST_PARAMS, status='3*')
+
+    # cleanup by deleting all
+    return authenticated_app
+
+
+@pytest.fixture()
+def unauthenticated_app_one_entry(authenticated_app_one_entry):
+    authenticated_app_one_entry.get('/logout', status='3*')
+    return authenticated_app_one_entry

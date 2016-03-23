@@ -18,6 +18,7 @@ GROUPS = {'editor': ['g:editors'],
 
 
 def groupfinder(userid, request):
+    """Help the TktAuthenticator to find users and their permissions."""
     if userid in USERS:
         return GROUPS.get(userid, [])
 
@@ -27,10 +28,9 @@ class DefaultRoot(object):
 
     __acl__ = [
         (Allow, Everyone, 'view'),
-        # (Allow, 'admin', 'edit'),
-        # (Allow, 'admin', 'create'),
         (Allow, 'g:editors', 'edit'),
         (Allow, 'g:editors', 'create'),
+        (Allow, 'g:admins', ['edit', 'create', 'delete']),
         (Allow, 'g:admins', ALL_PERMISSIONS)
     ]
 
