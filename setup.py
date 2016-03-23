@@ -22,9 +22,11 @@ requires = [
     'psycopg2',
     'wtforms',
     'markdown',
+    'cryptacular',
 ]
 
-test_require = ['pytest', 'pytest-watch', 'tox', 'webtest', 'pytest-cov']
+test_require = ['pytest', 'pytest-watch', 'tox', 'webtest',
+                'pytest-cov', 'cryptacular']
 dev_requires = ['ipython', 'pyramid-ipython']
 
 setup(name='journalapp',
