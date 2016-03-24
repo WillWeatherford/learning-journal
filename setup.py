@@ -13,7 +13,6 @@ with open(os.path.join(here, 'CHANGES.txt')) as f:
 requires = [
     'pyramid',
     'pyramid_jinja2',
-    'pyramid_debugtoolbar',
     'pyramid_tm',
     'SQLAlchemy',
     'transaction',
@@ -27,7 +26,7 @@ requires = [
 
 test_require = ['pytest', 'pytest-watch', 'tox', 'webtest',
                 'pytest-cov', 'cryptacular']
-dev_requires = ['ipython', 'pyramid-ipython']
+dev_requires = ['ipython', 'pyramid-ipython', 'pyramid_debugtoolbar']
 
 setup(name='journalapp',
       version='0.2',
