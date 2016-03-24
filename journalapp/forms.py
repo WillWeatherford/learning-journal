@@ -3,10 +3,15 @@
 """Define WTForm classes for adding and editing Entries into database."""
 
 from wtforms.validators import Length, InputRequired
-from wtforms import Form, StringField, TextAreaField
-from wtforms import ValidationError
+from wtforms import (
+    StringField,
+    TextAreaField,
+    PasswordField,
+    ValidationError
+)
 
 from .models import DBSession, Entry
+from .security import TotesSecureForm
 
 
 def unique_title(form, field):
@@ -25,7 +30,7 @@ EDIT_VALIDATORS = [
 ADD_VALIDATORS = EDIT_VALIDATORS + [unique_title]
 
 
-class EditEntryForm(Form):
+class EditEntryForm(TotesSecureForm):
     """Form used for both editing Entry models."""
 
     title = StringField(
@@ -39,3 +44,17 @@ class AddEntryForm(EditEntryForm):
 
     title = StringField(
         'Title', ADD_VALIDATORS)
+
+
+class LoginForm(TotesSecureForm):
+    """Form for logging in user."""
+
+    username = StringField(
+        'Username',
+        [Length(min=4, max=32),
+         InputRequired(message='Username is required.')
+         ])
+    password = PasswordField(
+        'Password',
+        [InputRequired(message='Password is required.')
+         ])
