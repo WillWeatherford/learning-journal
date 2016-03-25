@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
 """Initiliazes the journalapp in Pyramid."""
 import os
+import sys
 from pyramid.config import Configurator
 from pyramid.authentication import AuthTktAuthenticationPolicy
 from pyramid.authorization import ACLAuthorizationPolicy
-from cryptacular.bcrypt import BCRYPTPasswordManager
 from sqlalchemy import engine_from_config
 
 from .models import (
@@ -22,12 +22,13 @@ def main(global_config, **settings):
         if database_url is not None:
             settings['sqlalchemy.url'] = database_url
 
-    settings['auth.username'] = os.environ.get('AUTH_USERNAME', 'admin')
-    manager = BCRYPTPasswordManager()
-    settings['auth.password'] = os.environ.get(
-        'AUTH_PASSWORD', manager.encode('secret')
-    )
-    auth_secret = os.environ.get('JOURNAL_AUTH_SECRET', 'supersecret')
+    try:
+        settings['auth.username'] = os.environ['AUTH_USERNAME']
+        settings['auth.password'] = os.environ['AUTH_PASSWORD']
+        auth_secret = os.environ['JOURNAL_AUTH_SECRET']
+    except KeyError:
+        print('Autorization global variables have not been set.')
+        sys.exit()
     engine = engine_from_config(settings, 'sqlalchemy.')
     DBSession.configure(bind=engine)
     Base.metadata.bind = engine
