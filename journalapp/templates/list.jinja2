@@ -4,7 +4,7 @@
 
     <div class='add-button'>
         {% if request.has_permission('create') %}
-            <a href="{{request.route_url('add')}}">NewEntry</a>
+            <a href="{{request.route_url('add')}}">New Entry</a>
         {% endif %}
     </div>
     {% for entry in entries %}

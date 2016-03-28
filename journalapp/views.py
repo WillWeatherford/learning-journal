@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 """SQLAlchemy views to render learning journal."""
 from jinja2 import Markup
-# from cryptacular.bcrypt import BCRYPTPasswordManager
 
 from pyramid.httpexceptions import HTTPFound
 from pyramid.response import Response
