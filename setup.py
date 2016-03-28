@@ -22,6 +22,7 @@ requires = [
     'wtforms',
     'markdown',
     'cryptacular',
+    'requests',
 ]
 
 test_require = ['pytest', 'pytest-watch', 'tox', 'webtest',
@@ -38,9 +39,9 @@ setup(name='journalapp',
           "Topic :: Internet :: WWW/HTTP",
           "Topic :: Internet :: WWW/HTTP :: WSGI :: Application",
       ],
-      author='',
-      author_email='',
-      url='',
+      author='Will Weatherford',
+      author_email='weatherford.william@gmail.com',
+      url='http://journal.will-weatherford.com',
       keywords='web wsgi bfg pylons pyramid',
       packages=find_packages(),
       include_package_data=True,
@@ -56,5 +57,6 @@ setup(name='journalapp',
       main = journalapp:main
       [console_scripts]
       initialize_db = journalapp.scripts.initializedb:main
+      migrate = journalapp.scripts.get_crisewing_api:main
       """,
       )
