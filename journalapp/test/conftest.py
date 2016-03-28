@@ -89,7 +89,7 @@ def new_entry(request):
     DBSession.flush()
 
     def teardown():
-        DBSession.query(Entry).filter(Entry.id == entry.id).delete()
+        DBSession.query(Entry).filter_by(id=entry.id).delete()
 
     request.addfinalizer(teardown)
     return entry
