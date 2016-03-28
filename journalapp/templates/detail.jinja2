@@ -10,6 +10,6 @@
 
     <h4>{{entry.title}}</h4>
     <p>{{entry.created.strftime('%Y-%m-%d at %H:%M UTC')}}</p>
-    <p>{{entry.text}}</p>
+    <p>{{entry.markdown | safe }}</p>
 
 {% endblock %}

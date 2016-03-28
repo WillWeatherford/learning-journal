@@ -1,7 +1,5 @@
 # -*- coding: utf-8 -*-
 """SQLAlchemy views to render learning journal."""
-from jinja2 import Markup
-
 from pyramid.httpexceptions import HTTPFound
 from pyramid.response import Response
 from pyramid.security import remember, forget
@@ -10,7 +8,6 @@ from pyramid.view import view_config
 from .models import DBSession, Entry
 from .forms import EditEntryForm, AddEntryForm, LoginForm
 from .security import check_pw
-import markdown
 
 
 @view_config(route_name='list',
@@ -140,14 +137,3 @@ def get_auth_tkt_from_request(request):
     if not auth_tkts:
         return ''
     return auth_tkts[0]
-
-
-def render_markdown(content, linenums=False, pygments_style='default'):
-    """Jinja2 filter to render markdown text. Copied but no understood."""
-    ext = "codehilite(linenums={linenums}, pygments_style={pygments_style})"
-    output = Markup(
-        markdown.markdown(
-            content,
-            extensions=[ext.format(**locals()), 'fenced_code'])
-    )
-    return output

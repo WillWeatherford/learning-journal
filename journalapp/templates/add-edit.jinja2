@@ -5,19 +5,23 @@
 <div>
 <form method='POST' action=''>
     {{form.csrf_token}}
-    <div>{{form.title.label}}: <p>{{form.title(size = '100')}}</p></div>
-        <p class="errors">
-            {% if form.title.errors %}
-                {{form.title.errors.pop()}}
-            {% endif %}
-        </p>
+    <div>{{form.title.label}}:
+        <p>{{form.title(size = '70')}}</p>
+    </div>
+    <p class="errors">
+        {% if form.title.errors %}
+            {{form.title.errors.pop()}}
+        {% endif %}
+    </p>
 
-    <div>{{form.text.label}}: {{form.text(rows = '20', cols = '100') | markdown}}</div>
-        <p class="errors">
-            {% if form.text.errors %}
-                {{form.text.errors.pop()}}
-            {% endif %}
-        </p>
+    <div>{{form.text.label}}:
+        <p>{{form.text(rows = '12', cols = '100')}}</p>
+    </div>
+    <p class="errors">
+        {% if form.text.errors %}
+            {{form.text.errors.pop()}}
+        {% endif %}
+    </p>
 
     <div><INPUT TYPE="submit" VALUE="submit"></div>
 </form>
